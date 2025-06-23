@@ -20,17 +20,15 @@
 	"description": "",
 	"devDependencies": {
 		"@graphql-codegen/cli": "5.0.7",
+		"@graphql-codegen/typescript": "4.1.6",
+		"@graphql-codegen/typescript-resolvers": "4.5.1",
 		"@types/express": "^5.0.3",
 		"nodemon": "^3.1.10",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.8.3",
-		"@graphql-codegen/typescript-resolvers": "4.5.1",
-		"@graphql-codegen/typescript": "4.1.6"
+		"typescript": "^5.8.3"
 	},
 	"dependencies": {
 		"dotenv": "^16.5.0",
-		"express": "^5.1.0",
-		"graphql": "^16.11.0",
-		"graphql-http": "^1.22.4"
+		"express": "^5.1.0"
 	}
 }
