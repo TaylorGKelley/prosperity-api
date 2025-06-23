@@ -1,20 +1,12 @@
 import express from 'express';
-import schema from './schema';
-import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import resolvers from './resolvers';
+import cors, { CorsRequest } from 'cors';
+import apolloServer from './infrastructure/apollo-server';
 
 const app = express();
 
-(async () => {
-	const server = new ApolloServer({
-		typeDefs: schema,
-		resolvers,
-	});
+app.use(cors<CorsRequest>());
+app.use(express.json());
 
-	await server.start();
-
-	app.use('/api/v1', express.json(), expressMiddleware(server));
-})();
+app.use('/api/v1/graphql', apolloServer);
 
 export default app;
