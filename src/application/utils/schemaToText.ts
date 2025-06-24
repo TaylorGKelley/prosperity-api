@@ -17,3 +17,5 @@ const schemaToText = async (filePath: string): Promise<string> => {
 		}
 	}
 };
+
+export default schemaToText;

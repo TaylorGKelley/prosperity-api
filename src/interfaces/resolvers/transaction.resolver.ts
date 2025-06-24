@@ -1,9 +1,7 @@
 import { GraphQLScalarType, Kind } from 'graphql';
 import { IResolvers } from '@graphql-tools/utils';
-import { TransactionService } from './transaction.service';
-import { Transaction } from './transaction.model';
-
-const transactionService = new TransactionService();
+import { getTransactionById } from '@/application/useCases/transaction.useCase';
+import { Transaction } from '@/domain/entities/transaction.entity';
 
 // Custom Date scalar implementation
 const DateScalar = new GraphQLScalarType({
@@ -30,7 +28,7 @@ export const transactionResolvers: IResolvers = {
 			_: unknown,
 			args: { id: string }
 		): Promise<Transaction | null> => {
-			return transactionService.getTransactionById(args.id);
+			return getTransactionById(args.id);
 		},
 	},
 	Mutation: {

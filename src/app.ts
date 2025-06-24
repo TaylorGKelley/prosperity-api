@@ -1,12 +1,28 @@
 import express from 'express';
-import cors, { CorsRequest } from 'cors';
-import apolloServer from './infrastructure/apollo-server';
+import { ApolloServer } from '@apollo/server';
+import {
+	expressMiddleware,
+	ExpressContextFunctionArgument,
+} from '@apollo/server/express4';
+import resolvers from './resolvers';
+import schema from './schema';
 
 const app = express();
 
-app.use(cors<CorsRequest>());
-app.use(express.json());
+(async () => {
+	const server = new ApolloServer({
+		typeDefs: schema,
+		resolvers,
+	});
+	await server.start();
 
-app.use('/api/v1/graphql', apolloServer);
+	app.use(
+		'/api/v1',
+		express.json(),
+		expressMiddleware(server, {
+			context: async ({ req }: ExpressContextFunctionArgument) => ({ req }),
+		})
+	);
+})();
 
 export default app;

@@ -1,11 +1,15 @@
-import resolvers from '@/resolvers';
-import schema from '@/schema';
+import schema from '@/interfaces/schema';
+import resolvers from '@/interfaces/resolvers';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 
+interface IContext {
+	req: Request;
+}
+
 const server = new ApolloServer({
-  typeDefs: schema,
-  resolvers,
+	typeDefs: schema,
+	resolvers,
 });
 
 await server.start();
