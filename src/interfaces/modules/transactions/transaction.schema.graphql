@@ -1,0 +1,37 @@
+scalar Date
+
+type Transaction {
+	id: String!
+	amount: Float!
+	currency: String!
+	date: Date!
+	description: String!
+}
+
+type Query {
+	transactions: [Transaction!]!
+	transaction(id: String!): Transaction
+}
+
+type Mutation {
+	createTransaction(input: CreateTransactionInput!): Transaction!
+
+	updateTransaction(input: UpdateTransactionInput!): Transaction!
+
+	deleteTransaction(id: String!): Boolean!
+}
+
+input CreateTransactionInput {
+	amount: Float!
+	currency: String!
+	date: Date!
+	description: String!
+}
+
+input UpdateTransactionInput {
+	id: String!
+	amount: Float
+	currency: String
+	date: Date
+	description: String
+}
