@@ -1,1 +1,3 @@
-export * from './transaction.resolver';
+import { transactionResolvers } from './transaction.resolver';
+
+export default [transactionResolvers];
