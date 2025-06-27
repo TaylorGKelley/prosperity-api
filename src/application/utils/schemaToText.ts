@@ -1,10 +1,10 @@
-import { readFile } from 'fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'path';
 
-const schemaToText = async (filePath: string): Promise<string> => {
+const schemaToText = (filePath: string): string => {
 	try {
 		const absolutePath = path.resolve(filePath);
-		const typeDefs = await readFile(absolutePath, 'utf-8');
+		const typeDefs = readFileSync(absolutePath, 'utf-8');
 
 		return typeDefs;
 	} catch (error) {
