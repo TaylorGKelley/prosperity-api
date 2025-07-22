@@ -1,0 +1,7 @@
+overwrite: true
+schema: "./src/interfaces/schema"
+generates:
+  src/types/schema.ts:
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"

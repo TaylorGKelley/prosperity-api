@@ -1,0 +1,3 @@
+directive @auth(
+	permissions: [String!]! = ["public"]
+) on OBJECT | FIELD_DEFINITION
