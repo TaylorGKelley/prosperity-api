@@ -4,7 +4,7 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "generate": "graphql-codegen --config graphql.codegen.yml",
+    "gql:generate": "graphql-codegen --config graphql.codegen.yml",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "ts-node -r tsconfig-paths/register src/infrastructure/database/seed/main.ts"
