@@ -1,11 +1,17 @@
 import { db } from '..';
 import { transactionTable } from '../schema';
-import { transactionData } from './data';
+import { categoryTable } from '../schema/category.schema';
+import { userTable } from '../schema/user.schema';
+import { categoryData, transactionData, userData } from './data';
 
 async function main() {
   try {
+    await db.delete(userTable);
+    await db.delete(categoryTable);
     await db.delete(transactionTable);
 
+    await db.insert(userTable).values(userData);
+    await db.insert(categoryTable).values(categoryData);
     await db.insert(transactionTable).values(transactionData);
 
     console.log('Seed data inserted successfully');
