@@ -1,34 +1,41 @@
 {
-	"name": "prosperity-api",
-	"version": "1.0.0",
-	"main": "src/server.js",
-	"scripts": {
-		"dev": "nodemon src/server.ts",
-		"generate": "graphql-codegen --config graphql.codegen.yml"
-	},
-	"keywords": [],
-	"author": "Taylor Kelley",
-	"license": "ISC",
-	"description": "Prosperity API for data management with Prosperity Budgeting Application",
-	"dependencies": {
-		"@apollo/datasource-rest": "^6.4.1",
-		"@apollo/server": "^5.0.0",
-		"@graphql-tools/merge": "^9.1.0",
-		"@graphql-tools/schema": "^10.0.24",
-		"@graphql-tools/utils": "^10.9.0",
-		"dotenv": "^17.2.0",
-		"glob": "^11.0.3",
-		"graphql": "^16.11.0",
-		"graphql-scalars": "^1.24.2",
-		"graphql-tag": "^2.12.6"
-	},
-	"devDependencies": {
-		"@graphql-codegen/cli": "5.0.7",
-		"@graphql-codegen/typescript": "4.1.6",
-		"@graphql-codegen/typescript-resolvers": "4.5.1",
-		"nodemon": "^3.1.10",
-		"ts-node": "^10.9.2",
-		"tsconfig-paths": "^4.2.0",
-		"typescript": "^5.8.3"
-	}
+  "name": "prosperity-api",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.ts",
+    "generate": "graphql-codegen --config graphql.codegen.yml",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "ts-node -r tsconfig-paths/register src/infrastructure/database/seed/main.ts"
+  },
+  "keywords": [],
+  "author": "Taylor Kelley",
+  "license": "ISC",
+  "description": "Prosperity API for data management with Prosperity Budgeting Application",
+  "dependencies": {
+    "@apollo/datasource-rest": "^6.4.1",
+    "@apollo/server": "^5.0.0",
+    "@graphql-tools/merge": "^9.1.0",
+    "@graphql-tools/schema": "^10.0.24",
+    "@graphql-tools/utils": "^10.9.0",
+    "dotenv": "^17.2.0",
+    "drizzle-orm": "^0.44.4",
+    "glob": "^11.0.3",
+    "graphql": "^16.11.0",
+    "graphql-scalars": "^1.24.2",
+    "graphql-tag": "^2.12.6",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "5.0.7",
+    "@graphql-codegen/typescript": "4.1.6",
+    "@graphql-codegen/typescript-resolvers": "4.5.1",
+    "@types/pg": "^8.15.5",
+    "drizzle-kit": "^0.31.4",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
+  }
 }

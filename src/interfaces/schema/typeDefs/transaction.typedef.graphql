@@ -1,9 +1,12 @@
 type Query {
-  transactions: [Transaction!]! @auth(permissions: ["public"])
+  transactions: [Transaction!]! @auth(permissions: ["default"])
+  transactionById(id: ID!): Transaction! @auth(permissions: ["default"])
 }
 
 type Mutation {
   createTransaction(input: CreateTransactionInput!): Transaction!
+  updateTransaction(input: UpdateTransactionInput!): Transaction!
+  deleteTransaction(id: ID!): ID!
 }
 
 type Transaction {
@@ -16,5 +19,12 @@ type Transaction {
 input CreateTransactionInput {
   amount: Float!
   date: DateTime!
+  description: String
+}
+
+input UpdateTransactionInput {
+  id: ID!
+  amount: Float
+  date: DateTime
   description: String
 }

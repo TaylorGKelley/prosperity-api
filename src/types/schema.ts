@@ -27,6 +27,8 @@ export type CreateTransactionInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createTransaction: Transaction;
+  deleteTransaction: Scalars['ID']['output'];
+  updateTransaction: Transaction;
 };
 
 
@@ -34,9 +36,25 @@ export type MutationCreateTransactionArgs = {
   input: CreateTransactionInput;
 };
 
+
+export type MutationDeleteTransactionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateTransactionArgs = {
+  input: UpdateTransactionInput;
+};
+
 export type Query = {
   __typename?: 'Query';
+  transactionById: Transaction;
   transactions: Array<Transaction>;
+};
+
+
+export type QueryTransactionByIdArgs = {
+  id: Scalars['ID']['input'];
 };
 
 export type Transaction = {
@@ -45,6 +63,13 @@ export type Transaction = {
   date: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+};
+
+export type UpdateTransactionInput = {
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
 };
 
 
@@ -128,6 +153,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Transaction: ResolverTypeWrapper<Transaction>;
+  UpdateTransactionInput: UpdateTransactionInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -142,6 +168,7 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String']['output'];
   Transaction: Transaction;
+  UpdateTransactionInput: UpdateTransactionInput;
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -154,9 +181,12 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createTransaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<MutationCreateTransactionArgs, 'input'>>;
+  deleteTransaction?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteTransactionArgs, 'id'>>;
+  updateTransaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<MutationUpdateTransactionArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionByIdArgs, 'id'>>;
   transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType>;
 };
 

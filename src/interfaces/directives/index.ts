@@ -46,13 +46,16 @@ function directiveTransformer(schema: GraphQLSchema) {
             const response =
               await context.authRequestHandler.getUserPermissions();
 
-            const isAllowed = permissions.some((permission) =>
-              response.permissions[
-                context.authRequestHandler.linkedServiceId
-              ]?.includes(permission)
+            const isAllowed = permissions.some(
+              (permission) =>
+                permission ===
+                  (process.env.AUTH_SERVICE_DEFAULT_PERMISSION as string) ||
+                response.permissions[
+                  context.authRequestHandler.linkedServiceId
+                ]?.includes(permission)
             );
 
-            if (!isAllowed && !permissions.includes('public')) {
+            if (!isAllowed) {
               throw new Error('Forbidden');
             }
 
