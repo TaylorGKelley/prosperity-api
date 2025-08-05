@@ -14,10 +14,10 @@ const initializeDatabase = () => {
   pool
     .query('SELECT 1')
     .then(() => {
-      console.log('Database connection established successfully.');
+      console.log('🔌 Database connection established successfully.');
     })
     .catch((err: Error) => {
-      console.error('Database connection test failed:', err.message);
+      console.error('🛑 Database connection test failed:', err.message);
       throw new Error('Failed to connect to the database.');
     });
 
