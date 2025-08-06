@@ -1,19 +1,18 @@
-import { UUID } from 'node:crypto';
+import crypto, { type UUID } from 'node:crypto';
 import { transactionTable } from '../schema';
 import { categoryTable } from '../schema/category.schema';
 import { userTable } from '../schema/user.schema';
 
 export const userData: (typeof userTable.$inferInsert)[] = [
   {
-    id: '550e8400-e29b-41d4-a716-446123654789',
-    userId: 0,
+    id: 'e3d9287c-3eeb-4a67-b7a9-c0dba079a087' as UUID, //crypto.randomUUID(),
   },
 ];
 
 export const categoryData: (typeof categoryTable.$inferInsert)[] = [
   {
-    id: '550e8400-e29b-41d4-a716-446655440000' as UUID,
-    userId: '550e8400-e29b-41d4-a716-446123654789',
+    id: crypto.randomUUID(),
+    userId: userData[0].id as UUID,
     name: 'Food',
     amount: 15.22,
     startDate: new Date(Date.now()),
@@ -23,8 +22,8 @@ export const categoryData: (typeof categoryTable.$inferInsert)[] = [
 
 export const transactionData: (typeof transactionTable.$inferInsert)[] = [
   {
-    id: '550e8400-e29b-41d4-a716-446655440000' as UUID,
-    userId: '550e8400-e29b-41d4-a716-446123654789',
+    id: crypto.randomUUID(),
+    userId: userData[0].id as UUID,
     title: 'Test Transaction',
     amount: 15.22,
     transactionType: 'cash',
