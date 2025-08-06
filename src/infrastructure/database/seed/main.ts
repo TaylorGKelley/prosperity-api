@@ -6,9 +6,9 @@ import { categoryData, transactionData, userData } from './data';
 
 async function main() {
   try {
-    await db.delete(userTable);
-    await db.delete(categoryTable);
     await db.delete(transactionTable);
+    await db.delete(categoryTable);
+    await db.delete(userTable);
 
     await db.insert(userTable).values(userData);
     await db.insert(categoryTable).values(categoryData);
