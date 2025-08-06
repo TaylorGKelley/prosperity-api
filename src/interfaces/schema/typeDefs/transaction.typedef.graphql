@@ -5,26 +5,45 @@ type Query {
 
 type Mutation {
   createTransaction(input: CreateTransactionInput!): Transaction!
+    @auth(permissions: ["default"])
   updateTransaction(input: UpdateTransactionInput!): Transaction!
-  deleteTransaction(id: ID!): ID!
+    @auth(permissions: ["default"])
+  deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
+}
+
+enum TransactionType {
+  cash
+  debit_card
+  credit_card
+  bank_transfer
+  check
+  gift_card
 }
 
 type Transaction {
   id: ID!
+  title: String!
   amount: Float!
+  transactionType: TransactionType!
   date: DateTime!
   description: String
 }
 
 input CreateTransactionInput {
+  categoryId: ID!
+  title: String!
   amount: Float!
+  transactionType: TransactionType!
   date: DateTime!
   description: String
 }
 
 input UpdateTransactionInput {
   id: ID!
+  categoryId: ID
+  title: String
   amount: Float
+  transactionType: TransactionType
   date: DateTime
   description: String
 }

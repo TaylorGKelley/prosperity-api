@@ -3,13 +3,13 @@ import { type ContextType } from '@/infrastructure/apollo';
 import { type Resolvers } from '@/types/schema';
 import { UUID } from 'node:crypto';
 
-const transactionsResolver: Resolvers<ContextType> = {
+const transactionResolver: Resolvers<ContextType> = {
   Query: {
-    transactions: async (_parent, _args, _context, _info) => {
-      return [{ id: '', amount: 0.34, date: Date.now(), description: '' }];
+    transactions: async (_parent, _args, { req }, _info) => {
+      return await Transactions.forUser(req.user).getAll();
     },
-    transactionById: async (_parent, { id }, _context, _info) => {
-      const transaction = await Transactions.getTransaction(id as UUID)!;
+    transactionById: async (_parent, { id }, { req }, _info) => {
+      const transaction = await Transactions.forUser(req.user).get(id as UUID)!;
 
       if (!transaction)
         throw new Error('Cannot find a transaction with that Id');
@@ -18,26 +18,16 @@ const transactionsResolver: Resolvers<ContextType> = {
     },
   },
   Mutation: {
-    createTransaction: async (_parent, { input }, _context, _info) => {
-      return {
-        id: '',
-        amount: 0.34,
-        date: Date.now(),
-        description: '',
-      };
+    createTransaction: async (_parent, { input }, { req }, _info) => {
+      return await Transactions.forUser(req.user).create(input);
     },
-    updateTransaction: async (_parent, { input }, _context, _info) => {
-      return {
-        id: '',
-        amount: 0.34,
-        date: Date.now(),
-        description: '',
-      };
+    updateTransaction: async (_parent, { input }, { req }, _info) => {
+      return Transactions.forUser(req.user).update(input);
     },
-    deleteTransaction: async (_parent, { id }, _context, _info) => {
-      return id;
+    deleteTransaction: async (_parent, { id }, { req }, _info) => {
+      return Transactions.forUser(req.user).delete(id as UUID);
     },
   },
 };
 
-export default transactionsResolver;
+export default transactionResolver;

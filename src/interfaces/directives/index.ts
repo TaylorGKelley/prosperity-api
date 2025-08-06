@@ -46,6 +46,8 @@ function directiveTransformer(schema: GraphQLSchema) {
             const response =
               await context.authRequestHandler.getUserPermissions();
 
+            context.req.user = response.user;
+
             const isAllowed = permissions.some(
               (permission) =>
                 permission ===

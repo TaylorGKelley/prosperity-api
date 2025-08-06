@@ -1,0 +1,35 @@
+type Query {
+  categories: [Category!]! @auth(permissions: ["default"])
+  categoryById(id: ID!): Category! @auth(permissions: ["default"])
+}
+
+type Mutation {
+  createCategory(input: CreateCategoryInput!): Category!
+    @auth(permissions: ["default"])
+  updateCategory(input: UpdateCategoryInput!): Category!
+    @auth(permissions: ["default"])
+  deleteCategory(id: ID!): ID! @auth(permissions: ["default"])
+}
+
+type Category {
+  id: ID!
+  name: String!
+  amount: Float!
+  startDate: DateTime!
+  endDate: DateTime
+}
+
+input CreateCategoryInput {
+  name: String!
+  amount: Float!
+  startDate: DateTime!
+  endDate: DateTime
+}
+
+input UpdateCategoryInput {
+  id: ID!
+  name: String
+  amount: Float
+  startDate: DateTime
+  endDate: DateTime
+}

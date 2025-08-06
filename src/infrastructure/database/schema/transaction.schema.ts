@@ -27,7 +27,7 @@ export const transactionTable = pgTable('transaction', {
   categoryId: uuid('category_id').references(() => categoryTable.id),
   title: varchar('title').notNull(),
   amount: real('amount').notNull(),
-  transactionType: transactionTypeEnum('transaction_type'),
+  transactionType: transactionTypeEnum('transaction_type').notNull(),
   date: date('date', { mode: 'date' }).notNull().defaultNow(),
   description: text('description'),
 });

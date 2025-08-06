@@ -14,21 +14,48 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Date: { input: any; output: any; }
-  DateTime: { input: any; output: any; }
+  Date: { input: Date; output: Date; }
+  DateTime: { input: Date; output: Date; }
+};
+
+export type Category = {
+  __typename?: 'Category';
+  amount: Scalars['Float']['output'];
+  endDate?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  startDate: Scalars['DateTime']['output'];
+};
+
+export type CreateCategoryInput = {
+  amount: Scalars['Float']['input'];
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  name: Scalars['String']['input'];
+  startDate: Scalars['DateTime']['input'];
 };
 
 export type CreateTransactionInput = {
   amount: Scalars['Float']['input'];
+  categoryId: Scalars['ID']['input'];
   date: Scalars['DateTime']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+  transactionType: TransactionType;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createCategory: Category;
   createTransaction: Transaction;
+  deleteCategory: Scalars['ID']['output'];
   deleteTransaction: Scalars['ID']['output'];
+  updateCategory: Category;
   updateTransaction: Transaction;
+};
+
+
+export type MutationCreateCategoryArgs = {
+  input: CreateCategoryInput;
 };
 
 
@@ -37,8 +64,18 @@ export type MutationCreateTransactionArgs = {
 };
 
 
+export type MutationDeleteCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteTransactionArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateCategoryArgs = {
+  input: UpdateCategoryInput;
 };
 
 
@@ -48,8 +85,15 @@ export type MutationUpdateTransactionArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  categories: Array<Category>;
+  categoryById: Category;
   transactionById: Transaction;
   transactions: Array<Transaction>;
+};
+
+
+export type QueryCategoryByIdArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -63,13 +107,35 @@ export type Transaction = {
   date: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  title: Scalars['String']['output'];
+  transactionType: TransactionType;
+};
+
+export enum TransactionType {
+  BankTransfer = 'bank_transfer',
+  Cash = 'cash',
+  Check = 'check',
+  CreditCard = 'credit_card',
+  DebitCard = 'debit_card',
+  GiftCard = 'gift_card'
+}
+
+export type UpdateCategoryInput = {
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type UpdateTransactionInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
+  categoryId?: InputMaybe<Scalars['ID']['input']>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+  transactionType?: InputMaybe<TransactionType>;
 };
 
 
@@ -144,6 +210,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Category: ResolverTypeWrapper<Category>;
+  CreateCategoryInput: CreateCategoryInput;
   CreateTransactionInput: CreateTransactionInput;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
@@ -153,12 +221,16 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Transaction: ResolverTypeWrapper<Transaction>;
+  TransactionType: TransactionType;
+  UpdateCategoryInput: UpdateCategoryInput;
   UpdateTransactionInput: UpdateTransactionInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
+  Category: Category;
+  CreateCategoryInput: CreateCategoryInput;
   CreateTransactionInput: CreateTransactionInput;
   Date: Scalars['Date']['output'];
   DateTime: Scalars['DateTime']['output'];
@@ -168,7 +240,17 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String']['output'];
   Transaction: Transaction;
+  UpdateCategoryInput: UpdateCategoryInput;
   UpdateTransactionInput: UpdateTransactionInput;
+};
+
+export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
+  amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -180,12 +262,17 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
   createTransaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<MutationCreateTransactionArgs, 'input'>>;
+  deleteCategory?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
   deleteTransaction?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteTransactionArgs, 'id'>>;
+  updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
   updateTransaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<MutationUpdateTransactionArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
+  categoryById?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryByIdArgs, 'id'>>;
   transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionByIdArgs, 'id'>>;
   transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType>;
 };
@@ -195,10 +282,13 @@ export type TransactionResolvers<ContextType = any, ParentType extends Resolvers
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionType?: Resolver<ResolversTypes['TransactionType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
+  Category?: CategoryResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;

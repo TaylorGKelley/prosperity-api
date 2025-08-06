@@ -8,9 +8,12 @@ import AuthRequestHandler from '../authentication-service/AuthRequestHandler';
 import { type IResolvers } from '@graphql-tools/utils';
 import { type IncomingMessage, type ServerResponse } from 'http';
 import { type DocumentNode } from 'graphql';
+import { User } from '@/types/User';
 
 type ContextType = {
-  req: IncomingMessage;
+  req: IncomingMessage & {
+    user: User | null;
+  };
   res: ServerResponse;
   authRequestHandler: AuthRequestHandler;
 };
@@ -37,7 +40,11 @@ function startServer(
       context: async ({ req, res }) => {
         const authRequestHandler = new AuthRequestHandler(req);
 
-        return { req, res, authRequestHandler };
+        return {
+          req: { ...req, user: null } as ContextType['req'],
+          res,
+          authRequestHandler,
+        };
       },
     });
 
