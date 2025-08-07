@@ -2,7 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import directiveTransformer, {
-  authDirectiveTypeDefs,
+  directiveTypeDefs as authDirectiveTypeDefs,
 } from '@/interfaces/directives/index.directives';
 import AuthRequestHandler from '../authentication-service/AuthRequestHandler';
 import { type IResolvers } from '@graphql-tools/utils';

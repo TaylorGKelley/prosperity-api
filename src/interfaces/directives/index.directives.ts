@@ -9,9 +9,9 @@ import gql from 'graphql-tag';
 import { mapSchema, MapperKind, getDirective } from '@graphql-tools/utils';
 import { ContextType } from '@/infrastructure/apollo';
 
-const authDirectiveName = 'auth' as const;
+const directiveName = 'auth' as const;
 
-const authDirectiveTypeDefs = gql(
+const directiveTypeDefs = gql(
   readFileSync(path.resolve(__dirname, './index.directives.graphql'), {
     encoding: 'utf-8',
   })
@@ -22,7 +22,7 @@ function directiveTransformer(schema: GraphQLSchema) {
 
   return mapSchema(schema, {
     [MapperKind.TYPE]: (type) => {
-      const authDirective = getDirective(schema, type, authDirectiveName)?.[0];
+      const authDirective = getDirective(schema, type, directiveName)?.[0];
       if (authDirective) {
         typeDirectiveArgumentMaps[type.name] = authDirective;
       }
@@ -30,7 +30,7 @@ function directiveTransformer(schema: GraphQLSchema) {
     },
     [MapperKind.OBJECT_FIELD]: (fieldConfig, _fieldName, typeName) => {
       const authDirective =
-        getDirective(schema, fieldConfig, authDirectiveName)?.[0] ??
+        getDirective(schema, fieldConfig, directiveName)?.[0] ??
         typeDirectiveArgumentMaps[typeName];
       if (authDirective) {
         const { permissions } = authDirective as { permissions?: string[] };
@@ -70,4 +70,4 @@ function directiveTransformer(schema: GraphQLSchema) {
   });
 }
 
-export { directiveTransformer as default, authDirectiveTypeDefs };
+export { directiveTransformer as default, directiveTypeDefs };
