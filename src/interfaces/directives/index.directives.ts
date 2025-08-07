@@ -12,7 +12,7 @@ import { ContextType } from '@/infrastructure/apollo';
 const authDirectiveName = 'auth' as const;
 
 const authDirectiveTypeDefs = gql(
-  readFileSync(path.resolve(__dirname, './directives.graphql'), {
+  readFileSync(path.resolve(__dirname, './index.directives.graphql'), {
     encoding: 'utf-8',
   })
 );

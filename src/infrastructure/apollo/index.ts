@@ -3,7 +3,7 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import directiveTransformer, {
   authDirectiveTypeDefs,
-} from '@/interfaces/directives';
+} from '@/interfaces/directives/index.directives';
 import AuthRequestHandler from '../authentication-service/AuthRequestHandler';
 import { type IResolvers } from '@graphql-tools/utils';
 import { type IncomingMessage, type ServerResponse } from 'http';
