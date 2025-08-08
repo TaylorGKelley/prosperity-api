@@ -4,7 +4,7 @@ import resolvers from '@/interfaces/resolvers';
 import schema from './interfaces/schema';
 import express from 'express';
 import { startMiddlewareServer } from './infrastructure/apollo';
-import { type UUID } from 'node:crypto';
+import { webhook } from './interfaces/controllers/webhook.controller';
 
 const port: number = parseInt(process.env.PORT!) || 4000;
 
@@ -12,22 +12,7 @@ const app = express();
 
 app.use(express.json());
 
-app.post('/webhook', (req, res) => {
-  try {
-    // Get data from req.body
-    console.log(req.body, req.headers['x-webhook-secret']);
-    const payload = req.body as { user: { id: UUID } };
-
-    res.status(200).json({
-      success: true,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: (error as Error).message,
-    });
-  }
-});
+app.post('/webhook', webhook);
 
 app.use('/', startMiddlewareServer(schema, resolvers));
 
