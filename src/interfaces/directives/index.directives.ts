@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import gql from 'graphql-tag';
 import { mapSchema, MapperKind, getDirective } from '@graphql-tools/utils';
-import { ContextType } from '@/infrastructure/apollo';
+import { ContextType } from '@/infrastructure/apollo/standalone';
 
 const directiveName = 'auth' as const;
 

@@ -9,22 +9,21 @@ import { type IResolvers } from '@graphql-tools/utils';
 import { type IncomingMessage, type ServerResponse } from 'http';
 import { type DocumentNode } from 'graphql';
 import { User } from '@/types/User';
-import { expressMiddleware } from '@as-integrations/express5';
-import { Request, RequestHandler, Response } from 'express';
 
 type ContextType = {
-  req: Request & {
+  req: IncomingMessage & {
     user: User | null;
   };
-  res: Response;
+  res: ServerResponse;
   authRequestHandler: AuthRequestHandler;
 };
 
-function startMiddlewareServer(
+function startServer(
   schema: DocumentNode,
-  resolvers: IResolvers
-): RequestHandler {
-  return async (req, res, next) => {
+  resolvers: IResolvers,
+  port: number
+) {
+  async function startApolloServer() {
     let execSchema = makeExecutableSchema({
       typeDefs: [authDirectiveTypeDefs, schema],
       resolvers,
@@ -36,9 +35,8 @@ function startMiddlewareServer(
       schema: execSchema,
     });
 
-    await server.start();
-
-    return expressMiddleware(server, {
+    const { url } = await startStandaloneServer<ContextType>(server, {
+      listen: { port },
       context: async ({ req, res }) => {
         const authRequestHandler = new AuthRequestHandler(req);
 
@@ -48,8 +46,15 @@ function startMiddlewareServer(
           authRequestHandler,
         };
       },
-    })(req, res, next);
-  };
+    });
+
+    console.log(`🚀 Server is running at: ${url}`);
+  }
+
+  startApolloServer().catch((error) => {
+    console.error('Error starting Apollo Server:', error);
+    process.exit(1);
+  });
 }
 
-export { startMiddlewareServer, type ContextType };
+export { startServer, type ContextType };

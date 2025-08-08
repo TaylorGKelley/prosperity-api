@@ -1,5 +1,5 @@
 import { Categories } from '@/application/useCases/Categories.useCase';
-import { type ContextType } from '@/infrastructure/apollo';
+import { type ContextType } from '@/infrastructure/apollo/standalone';
 import { type Resolvers } from '@/types/schema';
 import { UUID } from 'node:crypto';
 
