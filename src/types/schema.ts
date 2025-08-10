@@ -29,9 +29,7 @@ export type Category = {
 
 export type CreateCategoryInput = {
   amount: Scalars['Float']['input'];
-  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   name: Scalars['String']['input'];
-  startDate: Scalars['DateTime']['input'];
 };
 
 export type CreateTransactionInput = {
@@ -122,10 +120,8 @@ export enum TransactionType {
 
 export type UpdateCategoryInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
-  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type UpdateTransactionInput = {
