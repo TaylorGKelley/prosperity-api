@@ -8,12 +8,14 @@ import { userTable } from './user.schema';
  * endDate - when a category is deleted, set endDate to (the beginning of that month OR current date) to maintain previous months budgets
  */
 export const categoryTable = pgTable('category', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
-    .references(() => userTable.id)
-    .notNull(),
-  name: varchar('name').notNull(),
-  amount: decimal('amount', { mode: 'number' }).notNull(),
-  startDate: date('start_date', { mode: 'date' }).notNull().defaultNow(),
-  endDate: date('end_date', { mode: 'date' }),
+	id: uuid('id').primaryKey().defaultRandom(),
+	userId: uuid('user_id')
+		.references(() => userTable.id, {
+			onDelete: 'cascade',
+		})
+		.notNull(),
+	name: varchar('name').notNull(),
+	amount: decimal('amount', { mode: 'number' }).notNull(),
+	startDate: date('start_date', { mode: 'date' }).notNull().defaultNow(),
+	endDate: date('end_date', { mode: 'date' }),
 });
