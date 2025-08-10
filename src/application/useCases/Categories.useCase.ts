@@ -80,6 +80,8 @@ export class Categories {
 	}
 
 	public async update(input: UpdateCategoryInput): Promise<Category> {
+		// TODO: If StartDate is < this month, create a new category and set the old end date to last month
+
 		const result = (
 			await db
 				.update(categoryTable)
@@ -114,7 +116,11 @@ export class Categories {
 				await db
 					.update(categoryTable)
 					.set({
-						endDate: new Date(),
+						endDate: new Date(
+							new Date().getFullYear(),
+							new Date().getMonth() - 1,
+							1
+						),
 					})
 					.returning()
 			)[0];
