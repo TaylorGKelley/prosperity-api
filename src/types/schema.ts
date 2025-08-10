@@ -90,6 +90,11 @@ export type Query = {
 };
 
 
+export type QueryCategoriesArgs = {
+  monthDate?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+
 export type QueryCategoryByIdArgs = {
   id: Scalars['ID']['input'];
 };
@@ -267,7 +272,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
+  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, Partial<QueryCategoriesArgs>>;
   categoryById?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryByIdArgs, 'id'>>;
   transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionByIdArgs, 'id'>>;
   transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType>;

@@ -1,13 +1,16 @@
 import { type UUID } from 'node:crypto';
 import {
-	CreateCategoryInput,
-	UpdateCategoryInput,
 	type Category,
+	type QueryCategoriesArgs,
+	type QueryCategoryByIdArgs,
+	type CreateCategoryInput,
+	type UpdateCategoryInput,
+	type MutationDeleteCategoryArgs,
 } from '@/types/schema';
 import { type User } from '@/types/User';
 import { db } from '@/infrastructure/database';
 import { categoryTable } from '@/infrastructure/database/schema/category.schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gt, lte } from 'drizzle-orm';
 
 export class Categories {
 	public static forUser(user: User | null) {
@@ -21,16 +24,34 @@ export class Categories {
 		this._userId = userId;
 	}
 
-	public async getAll(): Promise<Category[]> {
+	public async getAll({ monthDate }: QueryCategoriesArgs): Promise<Category[]> {
 		const result = await db
 			.select()
 			.from(categoryTable)
-			.where(eq(categoryTable.userId, this._userId));
+			.where(
+				and(
+					eq(categoryTable.userId, this._userId),
+					!monthDate
+						? undefined
+						: lte(
+								categoryTable.startDate,
+								new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
+						  ),
+					!monthDate
+						? undefined
+						: gt(
+								categoryTable.endDate,
+								new Date(monthDate.getFullYear(), monthDate.getMonth(), 0)
+						  )
+				)
+			);
 
 		return result;
 	}
 
-	public async get(id: UUID): Promise<Category | undefined> {
+	public async get({
+		id,
+	}: QueryCategoryByIdArgs): Promise<Category | undefined> {
 		const result = (
 			await db
 				.select()
@@ -47,7 +68,11 @@ export class Categories {
 		const result = (
 			await db
 				.insert(categoryTable)
-				.values({ ...input, userId: this._userId })
+				.values({
+					...input,
+					// starDate: new Date(), // Defaults to now
+					userId: this._userId,
+				})
 				.returning()
 		)[0] as Category;
 
@@ -74,11 +99,11 @@ export class Categories {
 		return result;
 	}
 
-	public async delete(id: UUID): Promise<UUID> {
+	public async delete({ id }: MutationDeleteCategoryArgs): Promise<UUID> {
 		// Setting end dates will maintian categories for past months so that users can
 		// view their history without it being altered from deleting categories in the future
 
-		const category = await this.get(id);
+		const category = await this.get({ id });
 		if (!category || (category?.endDate && category?.endDate < new Date()))
 			// This prevents deleting categories that have already been ended
 			throw new Error('Cannot find a category with that Id');
