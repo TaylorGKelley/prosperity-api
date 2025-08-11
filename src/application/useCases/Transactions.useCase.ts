@@ -1,9 +1,12 @@
 import { db } from '@/infrastructure/database';
 import { transactionTable } from '@/infrastructure/database/schema';
 import {
-  CreateTransactionInput,
-  UpdateTransactionInput,
+  type QueryTransactionsArgs,
+  type QueryTransactionByIdArgs,
+  type MutationCreateTransactionArgs,
+  type MutationUpdateTransactionArgs,
   type Transaction,
+  MutationDeleteTransactionArgs,
 } from '@/types/schema';
 import { User } from '@/types/User';
 import { and, eq } from 'drizzle-orm';
@@ -21,7 +24,9 @@ export class Transactions {
     this._userId = userId;
   }
 
-  public async getAll(): Promise<Transaction[]> {
+  public async getAll({
+    pagination,
+  }: QueryTransactionsArgs): Promise<Transaction[]> {
     const result = (await db
       .select()
       .from(transactionTable)
@@ -30,7 +35,9 @@ export class Transactions {
     return result;
   }
 
-  public async get(id: UUID): Promise<Transaction | undefined> {
+  public async get({
+    id,
+  }: QueryTransactionByIdArgs): Promise<Transaction | undefined> {
     const result = (
       await db
         .select()
@@ -46,7 +53,9 @@ export class Transactions {
     return result;
   }
 
-  public async create(input: CreateTransactionInput): Promise<Transaction> {
+  public async create({
+    input,
+  }: MutationCreateTransactionArgs): Promise<Transaction> {
     const result = (
       await db
         .insert(transactionTable)
@@ -57,7 +66,9 @@ export class Transactions {
     return result;
   }
 
-  public async update(input: UpdateTransactionInput): Promise<Transaction> {
+  public async update({
+    input,
+  }: MutationUpdateTransactionArgs): Promise<Transaction> {
     const result = (
       await db
         .update(transactionTable)
@@ -81,7 +92,7 @@ export class Transactions {
     return result;
   }
 
-  public async delete(id: UUID): Promise<UUID> {
+  public async delete({ id }: MutationDeleteTransactionArgs): Promise<UUID> {
     const result = (
       await db
         .delete(transactionTable)

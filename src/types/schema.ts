@@ -9,7 +9,7 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
+  ID: { input: import('node:crypto').UUID; output: import('node:crypto').UUID; }
   String: { input: string; output: string; }
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
@@ -21,10 +21,10 @@ export type Scalars = {
 export type Category = {
   __typename?: 'Category';
   amount: Scalars['Float']['output'];
-  endDate?: Maybe<Scalars['DateTime']['output']>;
+  endDate?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  startDate: Scalars['DateTime']['output'];
+  startDate: Scalars['Date']['output'];
 };
 
 export type CreateCategoryInput = {
@@ -81,6 +81,11 @@ export type MutationUpdateTransactionArgs = {
   input: UpdateTransactionInput;
 };
 
+export type PaginationInput = {
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
@@ -91,7 +96,8 @@ export type Query = {
 
 
 export type QueryCategoriesArgs = {
-  monthDate?: InputMaybe<Scalars['DateTime']['input']>;
+  monthDate?: InputMaybe<Scalars['Date']['input']>;
+  pagination?: InputMaybe<PaginationInput>;
 };
 
 
@@ -102,6 +108,11 @@ export type QueryCategoryByIdArgs = {
 
 export type QueryTransactionByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryTransactionsArgs = {
+  pagination?: InputMaybe<PaginationInput>;
 };
 
 export type Transaction = {
@@ -218,7 +229,9 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
+  PaginationInput: PaginationInput;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Transaction: ResolverTypeWrapper<Transaction>;
@@ -237,7 +250,9 @@ export type ResolversParentTypes = {
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   Mutation: {};
+  PaginationInput: PaginationInput;
   Query: {};
   String: Scalars['String']['output'];
   Transaction: Transaction;
@@ -247,10 +262,10 @@ export type ResolversParentTypes = {
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -275,7 +290,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, Partial<QueryCategoriesArgs>>;
   categoryById?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryByIdArgs, 'id'>>;
   transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionByIdArgs, 'id'>>;
-  transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType>;
+  transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType, Partial<QueryTransactionsArgs>>;
 };
 
 export type TransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']> = {

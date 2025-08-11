@@ -1,5 +1,6 @@
 type Query {
-  transactions: [Transaction!]! @auth(permissions: ["default"])
+  transactions(pagination: PaginationInput): [Transaction!]!
+    @auth(permissions: ["default"])
   transactionById(id: ID!): Transaction! @auth(permissions: ["default"])
 }
 

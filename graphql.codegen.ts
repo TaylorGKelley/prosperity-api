@@ -1,4 +1,5 @@
 import { type CodegenConfig } from '@graphql-codegen/cli';
+import { type UUID } from 'node:crypto';
 
 const config: CodegenConfig = {
   overwrite: true,
@@ -8,6 +9,7 @@ const config: CodegenConfig = {
       plugins: ['typescript', 'typescript-resolvers'],
       config: {
         scalars: {
+          ID: "import('node:crypto').UUID",
           Date: 'Date',
           DateTime: 'Date',
         },
