@@ -13,7 +13,7 @@ function loadSchema(...patterns: string[]) {
     );
   }
 
-  return schemas.join('\n\n');
+  return schemas.join('\n');
 }
 
 export default loadSchema;

@@ -1,5 +1,5 @@
 type Query {
-  categories(monthDate: Date, pagination: PaginationInput): [Category!]!
+  categories(monthDate: DateTime, pagination: PaginationInput): [Category!]!
     @auth(permissions: ["default"])
   categoryById(id: ID!): Category! @auth(permissions: ["default"])
 }
@@ -16,8 +16,8 @@ type Category {
   id: ID!
   name: String!
   amount: Float!
-  startDate: Date!
-  endDate: Date
+  startDate: DateTime!
+  endDate: DateTime
 }
 
 input CreateCategoryInput {

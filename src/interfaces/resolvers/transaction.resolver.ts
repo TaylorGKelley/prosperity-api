@@ -4,8 +4,16 @@ import { type Resolvers } from '@/types/schema';
 
 const transactionResolver: Resolvers<ContextType> = {
   Query: {
-    transactions: async (_parent, { pagination }, { req }, _info) => {
-      return await Transactions.forUser(req.user).getAll({ pagination });
+    transactions: async (
+      _parent,
+      { monthDate, pagination },
+      { req },
+      _info
+    ) => {
+      return await Transactions.forUser(req.user).getAll({
+        monthDate,
+        pagination,
+      });
     },
     transactionById: async (_parent, { id }, { req }, _info) => {
       const transaction = await Transactions.forUser(req.user).get({ id })!;

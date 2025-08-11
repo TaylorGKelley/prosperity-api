@@ -9,7 +9,7 @@ import {
   MutationDeleteTransactionArgs,
 } from '@/types/schema';
 import { User } from '@/types/User';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gt, lte } from 'drizzle-orm';
 import { type UUID } from 'node:crypto';
 
 export class Transactions {
@@ -25,12 +25,34 @@ export class Transactions {
   }
 
   public async getAll({
+    monthDate,
     pagination,
   }: QueryTransactionsArgs): Promise<Transaction[]> {
-    const result = (await db
+    const query = db
       .select()
       .from(transactionTable)
-      .where(eq(transactionTable.userId, this._userId))) as Transaction[];
+      .where(
+        and(
+          eq(transactionTable.userId, this._userId),
+          !monthDate
+            ? undefined
+            : lte(
+                transactionTable.date,
+                new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
+              ),
+          !monthDate
+            ? undefined
+            : gt(
+                transactionTable.date,
+                new Date(monthDate.getFullYear(), monthDate.getMonth(), 0)
+              )
+        )
+      );
+
+    if (pagination?.limit) query.limit(pagination.limit);
+    if (pagination?.offset) query.offset(pagination.offset);
+
+    const result = (await query) as Transaction[];
 
     return result;
   }

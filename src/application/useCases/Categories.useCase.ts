@@ -52,7 +52,7 @@ export class Categories {
     if (pagination?.limit) query.limit(pagination.limit);
     if (pagination?.offset) query.offset(pagination.offset);
 
-    const result = await query;
+    const result = (await query) as Category[];
 
     return result;
   }
@@ -69,7 +69,7 @@ export class Categories {
         )
     )?.[0];
 
-    return result;
+    return result as Category;
   }
 
   public async create({
@@ -135,7 +135,7 @@ export class Categories {
             ),
           })
           .returning()
-      )[0];
+      )[0] as Category;
     } else {
       // startDate >= this month
       result = (
@@ -148,7 +148,7 @@ export class Categories {
             )
           )
           .returning()
-      )[0];
+      )[0] as Category;
     }
 
     return result.id as UUID;
