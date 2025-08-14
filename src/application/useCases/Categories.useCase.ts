@@ -2,7 +2,7 @@ import { type UUID } from 'node:crypto';
 import {
 	type Category,
 	type QueryCategoriesArgs,
-	type QueryCategoryByIdArgs,
+	type QueryCategoryArgs,
 	type MutationCreateCategoryArgs,
 	type MutationUpdateCategoryArgs,
 	type MutationDeleteCategoryArgs,
@@ -61,9 +61,7 @@ export class Categories {
 		return result;
 	}
 
-	public async get({
-		id,
-	}: QueryCategoryByIdArgs): Promise<Category | undefined> {
+	public async get({ id }: QueryCategoryArgs): Promise<Category | undefined> {
 		const result = (
 			await db
 				.select()

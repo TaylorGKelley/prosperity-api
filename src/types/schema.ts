@@ -89,7 +89,7 @@ export type PaginationInput = {
 export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
-  categoryById: Category;
+  category: Category;
   transactionById: Transaction;
   transactions: Array<Transaction>;
 };
@@ -101,7 +101,7 @@ export type QueryCategoriesArgs = {
 };
 
 
-export type QueryCategoryByIdArgs = {
+export type QueryCategoryArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -289,7 +289,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, Partial<QueryCategoriesArgs>>;
-  categoryById?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryByIdArgs, 'id'>>;
+  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
   transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionByIdArgs, 'id'>>;
   transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<QueryTransactionsArgs, 'monthDate'>>;
 };
