@@ -1,52 +1,52 @@
 type Query {
-  transactions(
-    monthDate: DateTime!
-    pagination: PaginationInput
-  ): [Transaction!]! @auth(permissions: ["default"])
-  transactionById(id: ID!): Transaction! @auth(permissions: ["default"])
+	transactions(
+		monthDate: DateTime!
+		pagination: PaginationInput
+	): [Transaction!]! @auth(permissions: ["default"])
+	transaction(id: ID!): Transaction! @auth(permissions: ["default"])
 }
 
 type Mutation {
-  createTransaction(input: CreateTransactionInput!): Transaction!
-    @auth(permissions: ["default"])
-  updateTransaction(input: UpdateTransactionInput!): Transaction!
-    @auth(permissions: ["default"])
-  deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
+	createTransaction(input: CreateTransactionInput!): Transaction!
+		@auth(permissions: ["default"])
+	updateTransaction(input: UpdateTransactionInput!): Transaction!
+		@auth(permissions: ["default"])
+	deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
 }
 
 enum TransactionType {
-  cash
-  debit_card
-  credit_card
-  bank_transfer
-  check
-  gift_card
+	cash
+	debit_card
+	credit_card
+	bank_transfer
+	check
+	gift_card
 }
 
 type Transaction {
-  id: ID!
-  title: String!
-  amount: Float!
-  transactionType: TransactionType!
-  date: DateTime!
-  description: String
+	id: ID!
+	title: String!
+	amount: Float!
+	transactionType: TransactionType!
+	date: DateTime!
+	description: String
 }
 
 input CreateTransactionInput {
-  categoryId: ID!
-  title: String!
-  amount: Float!
-  transactionType: TransactionType!
-  date: DateTime!
-  description: String
+	categoryId: ID!
+	title: String!
+	amount: Float!
+	transactionType: TransactionType!
+	date: DateTime!
+	description: String
 }
 
 input UpdateTransactionInput {
-  id: ID!
-  categoryId: ID
-  title: String
-  amount: Float
-  transactionType: TransactionType
-  date: DateTime
-  description: String
+	id: ID!
+	categoryId: ID
+	title: String
+	amount: Float
+	transactionType: TransactionType
+	date: DateTime
+	description: String
 }

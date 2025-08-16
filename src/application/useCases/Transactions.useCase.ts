@@ -2,7 +2,7 @@ import { db } from '@/infrastructure/database';
 import { transactionTable } from '@/infrastructure/database/schema';
 import {
 	type QueryTransactionsArgs,
-	type QueryTransactionByIdArgs,
+	type QueryTransactionArgs,
 	type MutationCreateTransactionArgs,
 	type MutationUpdateTransactionArgs,
 	type Transaction,
@@ -60,7 +60,7 @@ export class Transactions {
 
 	public async get({
 		id,
-	}: QueryTransactionByIdArgs): Promise<Transaction | undefined> {
+	}: QueryTransactionArgs): Promise<Transaction | undefined> {
 		const result = (
 			await db
 				.select()
