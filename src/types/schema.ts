@@ -119,6 +119,7 @@ export type QueryTransactionsArgs = {
 export type Transaction = {
   __typename?: 'Transaction';
   amount: Scalars['Float']['output'];
+  categoryId?: Maybe<Scalars['ID']['output']>;
   date: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -296,6 +297,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type TransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  categoryId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
