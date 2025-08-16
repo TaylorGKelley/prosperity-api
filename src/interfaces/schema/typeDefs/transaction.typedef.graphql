@@ -27,6 +27,7 @@ type Transaction {
 	id: ID!
 	title: String!
 	amount: Float!
+	categoryId: ID
 	transactionType: TransactionType!
 	date: DateTime!
 	description: String
@@ -36,6 +37,7 @@ input CreateTransactionInput {
 	categoryId: ID!
 	title: String!
 	amount: Float!
+	categoryId: ID!
 	transactionType: TransactionType!
 	date: DateTime!
 	description: String
@@ -43,9 +45,9 @@ input CreateTransactionInput {
 
 input UpdateTransactionInput {
 	id: ID!
-	categoryId: ID
 	title: String
 	amount: Float
+	categoryId: ID
 	transactionType: TransactionType
 	date: DateTime
 	description: String
