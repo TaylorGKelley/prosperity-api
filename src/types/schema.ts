@@ -90,7 +90,7 @@ export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
   category: Category;
-  transactionById: Transaction;
+  transaction: Transaction;
   transactions: Array<Transaction>;
 };
 
@@ -106,7 +106,7 @@ export type QueryCategoryArgs = {
 };
 
 
-export type QueryTransactionByIdArgs = {
+export type QueryTransactionArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -119,6 +119,7 @@ export type QueryTransactionsArgs = {
 export type Transaction = {
   __typename?: 'Transaction';
   amount: Scalars['Float']['output'];
+  categoryId?: Maybe<Scalars['ID']['output']>;
   date: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -290,12 +291,13 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, Partial<QueryCategoriesArgs>>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
-  transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionByIdArgs, 'id'>>;
+  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionArgs, 'id'>>;
   transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<QueryTransactionsArgs, 'monthDate'>>;
 };
 
 export type TransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  categoryId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
