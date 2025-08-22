@@ -34,7 +34,6 @@ type Transaction {
 }
 
 input CreateTransactionInput {
-	categoryId: ID!
 	title: String!
 	amount: Float!
 	categoryId: ID!
