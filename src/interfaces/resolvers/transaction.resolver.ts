@@ -1,5 +1,5 @@
 import { Transactions } from '@/application/useCases/Transactions.useCase';
-import { type ContextType } from '@/infrastructure/apollo/standalone';
+import { type ContextType } from '@/infrastructure/configuration/apollo';
 import { type Resolvers } from '@/types/schema';
 
 const transactionResolver: Resolvers<ContextType> = {

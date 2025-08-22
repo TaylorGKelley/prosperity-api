@@ -3,7 +3,7 @@ import 'dotenv/config';
 import resolvers from '@/interfaces/resolvers';
 import schema from './interfaces/schema';
 import express from 'express';
-import { startMiddlewareServer } from './infrastructure/apollo';
+import { startMiddlewareServer } from './infrastructure/configuration/apollo';
 import { webhook } from './interfaces/controllers/webhook.controller';
 
 const port: number = parseInt(process.env.PORT!) || 4000;
@@ -19,5 +19,5 @@ app.use('/', startMiddlewareServer(schema, resolvers));
 // startServer(schema, resolvers, port);
 
 app.listen(port, () => {
-  console.log(`🚀 Server Started on port ${port}`);
+	console.log(`🚀 Server Started on port ${port}`);
 });
