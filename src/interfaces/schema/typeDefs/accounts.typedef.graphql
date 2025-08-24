@@ -1,0 +1,18 @@
+type Query {
+	accounts: [Account!]! @auth(permissions: ["default"])
+	account(id: String!): Account! @auth(permissions: ["default"])
+}
+
+type Mutation {
+	createAccount(input: CreateAccountInput!): [Account!]!
+		@auth(permissions: ["default"])
+	deleteAccount(id: ID!): ID @auth(permissions: ["default"])
+}
+
+type Account {
+	id: ID!
+}
+
+input CreateAccountInput {
+	accessToken: String!
+}

@@ -1,19 +1,19 @@
 import crypto from 'node:crypto';
 
-class Encrypt {
+export class AccessToken {
 	private static algorithm: crypto.CipherGCMTypes = 'aes-256-gcm' as const;
 
-	public static encryptSecret(secret: string) {
+	public static encrypt(token: string) {
 		const iv = crypto.randomBytes(12);
 
 		const cipher = crypto.createCipheriv(
-			Encrypt.algorithm,
-			process.env.WEBHOOK_SECRET_KEY!,
+			AccessToken.algorithm,
+			process.env.WEBHOOK_TOKEN_KEY!,
 			iv
 		);
 
-		const encryptedSecret = Buffer.concat([
-			cipher.update(secret),
+		const encryptedToken = Buffer.concat([
+			cipher.update(token),
 			cipher.final(),
 		]);
 
@@ -21,23 +21,22 @@ class Encrypt {
 
 		return {
 			iv: `${iv.toString('hex')}##${authTag.toString('hex')}`,
-			encryptedSecret: encryptedSecret.toString('hex'),
+			encryptedToken: encryptedToken.toString('hex'),
 		};
 	}
 
-	public static decryptSecret(encryptedSecret: string, iv: string) {
+	public static decrypt(encryptedToken: string, iv: string) {
 		const [encryptIV, authTag] = iv.split('##');
 
 		const decipher = crypto.createDecipheriv(
-			Encrypt.algorithm,
-			process.env.WEBHOOK_SECRET_KEY!,
+			AccessToken.algorithm,
+			process.env.WEBHOOK_TOKEN_KEY!,
 			Buffer.from(encryptIV, 'hex')
 		);
 		decipher.setAuthTag(Buffer.from(authTag, 'hex'));
 
 		const decrpyted =
-			decipher.update(encryptedSecret, 'hex', 'utf-8') +
-			decipher.final('utf-8');
+			decipher.update(encryptedToken, 'hex', 'utf-8') + decipher.final('utf-8');
 		return decrpyted.toString();
 	}
 }
