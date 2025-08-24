@@ -8,7 +8,7 @@ export class AccessToken {
 
 		const cipher = crypto.createCipheriv(
 			AccessToken.algorithm,
-			process.env.WEBHOOK_TOKEN_KEY!,
+			process.env.ACCOUNT_ACCESS_TOKEN_KEY!,
 			iv
 		);
 
@@ -30,7 +30,7 @@ export class AccessToken {
 
 		const decipher = crypto.createDecipheriv(
 			AccessToken.algorithm,
-			process.env.WEBHOOK_TOKEN_KEY!,
+			process.env.ACCOUNT_ACCESS_TOKEN_KEY!,
 			Buffer.from(encryptIV, 'hex')
 		);
 		decipher.setAuthTag(Buffer.from(authTag, 'hex'));

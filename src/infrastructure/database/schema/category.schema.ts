@@ -9,7 +9,7 @@ import { userTable } from './user.schema';
  */
 export const categoryTable = pgTable('category', {
 	id: uuid('id').primaryKey().defaultRandom(),
-	userId: uuid('user_id')
+	budgetId: uuid('budget_id')
 		.references(() => userTable.id, {
 			onDelete: 'cascade',
 		})
