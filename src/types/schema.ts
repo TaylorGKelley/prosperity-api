@@ -26,6 +26,7 @@ export type Account = {
 export type Category = {
   __typename?: 'Category';
   amount: Scalars['Float']['output'];
+  budgetId: Scalars['ID']['output'];
   endDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -301,6 +302,7 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  budgetId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
