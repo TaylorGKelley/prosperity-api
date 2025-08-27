@@ -23,6 +23,11 @@ export type Account = {
   id: Scalars['ID']['output'];
 };
 
+export type Budget = {
+  __typename?: 'Budget';
+  id: Scalars['ID']['output'];
+};
+
 export type Category = {
   __typename?: 'Category';
   amount: Scalars['Float']['output'];
@@ -112,6 +117,7 @@ export type Query = {
   __typename?: 'Query';
   account: Account;
   accounts: Array<Account>;
+  budget: Budget;
   categories: Array<Category>;
   category: Category;
   transaction: Transaction;
@@ -254,6 +260,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Account: ResolverTypeWrapper<Account>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Budget: ResolverTypeWrapper<Budget>;
   Category: ResolverTypeWrapper<Category>;
   CreateAccountInput: CreateAccountInput;
   CreateCategoryInput: CreateCategoryInput;
@@ -277,6 +284,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Account: Account;
   Boolean: Scalars['Boolean']['output'];
+  Budget: Budget;
   Category: Category;
   CreateAccountInput: CreateAccountInput;
   CreateCategoryInput: CreateCategoryInput;
@@ -296,6 +304,11 @@ export type ResolversParentTypes = {
 };
 
 export type AccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type BudgetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Budget'] = ResolversParentTypes['Budget']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -332,6 +345,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType, RequireFields<QueryAccountArgs, 'id'>>;
   accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType>;
+  budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, Partial<QueryCategoriesArgs>>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
   transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionArgs, 'id'>>;
@@ -351,6 +365,7 @@ export type TransactionResolvers<ContextType = any, ParentType extends Resolvers
 
 export type Resolvers<ContextType = any> = {
   Account?: AccountResolvers<ContextType>;
+  Budget?: BudgetResolvers<ContextType>;
   Category?: CategoryResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;

@@ -1,0 +1,7 @@
+type Query {
+  budget: Budget! @auth(permissions: ["default"])
+}
+
+type Budget {
+  id: ID!
+}
