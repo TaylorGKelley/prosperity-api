@@ -1,15 +1,17 @@
 import { db } from '..';
-import { transactionTable } from '../schema';
+import { budgetTable, transactionTable } from '../schema';
 import { categoryTable } from '../schema/category.schema';
 import { userTable } from '../schema/user.schema';
-import { categoryData, transactionData, userData } from './data';
+import { budgetData, categoryData, transactionData, userData } from './data';
 
 async function main() {
   try {
     await db.delete(transactionTable);
     await db.delete(categoryTable);
     await db.delete(userTable);
+    await db.delete(budgetTable);
 
+    await db.insert(budgetTable).values(budgetData);
     await db.insert(userTable).values(userData);
     await db.insert(categoryTable).values(categoryData);
     await db.insert(transactionTable).values(transactionData);
