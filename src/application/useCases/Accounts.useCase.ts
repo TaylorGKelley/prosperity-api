@@ -18,6 +18,7 @@ import {
   type MutationDeleteAccountArgs,
   type QueryAccountArgs,
 } from '@/types/schema';
+import snakeToPascalCase from '../utils/snakeToPascalCase';
 
 export class Accounts {
   public static forUser(user: User | null) {
@@ -58,14 +59,16 @@ export class Accounts {
         institution: accountInfo.institution,
         lastFour: parseInt(accountInfo.last_four),
         name: accountInfo.name,
-        type: TypeEnum[accountInfo.type.toUpperCase() as keyof typeof TypeEnum],
+        type: TypeEnum[
+          snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+        ],
         subtype:
           SubtypeEnum[
-            accountInfo.subtype.toUpperCase() as keyof typeof SubtypeEnum
+            snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
           ],
         status:
           StatusEnum[
-            accountInfo.status.toUpperCase() as keyof typeof StatusEnum
+            snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
           ],
       });
     }
@@ -99,13 +102,17 @@ export class Accounts {
       institution: accountInfo.institution,
       lastFour: parseInt(accountInfo.last_four),
       name: accountInfo.name,
-      type: TypeEnum[accountInfo.type.toUpperCase() as keyof typeof TypeEnum],
+      type: TypeEnum[
+        snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+      ],
       subtype:
         SubtypeEnum[
-          accountInfo.subtype.toUpperCase() as keyof typeof SubtypeEnum
+          snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
         ],
       status:
-        StatusEnum[accountInfo.status.toUpperCase() as keyof typeof StatusEnum],
+        StatusEnum[
+          snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+        ],
     };
   }
 
@@ -158,15 +165,15 @@ export class Accounts {
           lastFour: parseInt(accountInfo.last_four),
           name: accountInfo.name,
           type: TypeEnum[
-            accountInfo.type.toUpperCase() as keyof typeof TypeEnum
+            snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
           ],
           subtype:
             SubtypeEnum[
-              accountInfo.subtype.toUpperCase() as keyof typeof SubtypeEnum
+              snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
             ],
           status:
             StatusEnum[
-              accountInfo.status.toUpperCase() as keyof typeof StatusEnum
+              snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
             ],
         };
       });
