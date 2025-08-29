@@ -1,18 +1,52 @@
 type Query {
-	accounts: [Account!]! @auth(permissions: ["default"])
-	account(id: String!): Account! @auth(permissions: ["default"])
+  accounts: [Account!]! @auth(permissions: ["default"])
+  account(id: String!): Account! @auth(permissions: ["default"])
 }
 
 type Mutation {
-	createAccount(input: CreateAccountInput!): [Account!]!
-		@auth(permissions: ["default"])
-	deleteAccount(id: ID!): ID @auth(permissions: ["default"])
+  createAccount(input: CreateAccountInput!): [Account!]!
+    @auth(permissions: ["default"])
+  deleteAccount(id: ID!): ID @auth(permissions: ["default"])
 }
 
 type Account {
-	id: ID!
+  id: ID!
+  budgetId: ID!
+  currency: String!
+  enrollmentId: String!
+  institution: Institution!
+  lastFour: Int!
+  name: String!
+  type: TypeEnum!
+  subtype: SubtypeEnum!
+  status: StatusEnum!
+}
+
+type Institution {
+  id: String!
+  name: String!
+}
+
+enum TypeEnum {
+  DEPOSITORY
+  CREDIT
+}
+
+enum SubtypeEnum {
+  CREDIT_CARD
+  CHECKING
+  SAVINGS
+  MONEY_MARKET
+  CERTIFICATE_OF_DEPOSIT
+  TREASURY
+  SWEEP
+}
+
+enum StatusEnum {
+  OPEN
+  CLOSED
 }
 
 input CreateAccountInput {
-	accessToken: String!
+  accessToken: String!
 }

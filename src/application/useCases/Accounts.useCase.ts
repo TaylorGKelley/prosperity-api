@@ -10,6 +10,9 @@ import { type UUID } from 'node:crypto';
 import { AccessToken } from '../utils/AccessToken';
 import TellerClient from '@/infrastructure/configuration/teller-client';
 import {
+  StatusEnum,
+  SubtypeEnum,
+  TypeEnum,
   type Account,
   type MutationCreateAccountArgs,
   type MutationDeleteAccountArgs,
@@ -29,7 +32,7 @@ export class Accounts {
   }
 
   public async getAll(): Promise<Account[]> {
-    const accounts = await db
+    const accountRecords = await db
       .select(getTableColumns(accountTable))
       .from(accountTable)
       .innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
@@ -37,26 +40,72 @@ export class Accounts {
       .where(eq(userTable.id, this._userId));
 
     const result: Account[] = [];
-    for (const account of accounts) {
+    for (const accountRecord of accountRecords) {
       const accessToken = AccessToken.decrypt(
-        account.accessToken,
-        account.accessTokenIV
+        accountRecord.accessToken,
+        accountRecord.accessTokenIV
       );
 
-      const accountInfo = new TellerClient(accessToken).getAccount(
-        account.accountId
+      const accountInfo = await new TellerClient(accessToken).getAccount(
+        accountRecord.accountId
       );
 
       result.push({
-        id: account.id as UUID,
+        id: accountRecord.id,
+        budgetId: accountRecord.budgetId,
+        currency: accountInfo.currency,
+        enrollmentId: accountInfo.enrollment_id,
+        institution: accountInfo.institution,
+        lastFour: parseInt(accountInfo.last_four),
+        name: accountInfo.name,
+        type: TypeEnum[accountInfo.type.toUpperCase() as keyof typeof TypeEnum],
+        subtype:
+          SubtypeEnum[
+            accountInfo.subtype.toUpperCase() as keyof typeof SubtypeEnum
+          ],
+        status:
+          StatusEnum[
+            accountInfo.status.toUpperCase() as keyof typeof StatusEnum
+          ],
       });
     }
 
     return result;
   }
   public async get({ id }: QueryAccountArgs): Promise<Account> {
+    const result = (
+      await db
+        .select(getTableColumns(accountTable))
+        .from(accountTable)
+        .innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
+        .innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
+        .where(and(eq(accountTable.id, id), eq(userTable.id, this._userId)))
+    )[0];
+
+    const accessToken = AccessToken.decrypt(
+      result.accessToken,
+      result.accessTokenIV
+    );
+
+    const accountInfo = await new TellerClient(accessToken).getAccount(
+      result.accountId
+    );
+
     return {
-      id,
+      id: result.id,
+      budgetId: result.budgetId,
+      currency: accountInfo.currency,
+      enrollmentId: accountInfo.enrollment_id,
+      institution: accountInfo.institution,
+      lastFour: parseInt(accountInfo.last_four),
+      name: accountInfo.name,
+      type: TypeEnum[accountInfo.type.toUpperCase() as keyof typeof TypeEnum],
+      subtype:
+        SubtypeEnum[
+          accountInfo.subtype.toUpperCase() as keyof typeof SubtypeEnum
+        ],
+      status:
+        StatusEnum[accountInfo.status.toUpperCase() as keyof typeof StatusEnum],
     };
   }
 
@@ -95,7 +144,32 @@ export class Accounts {
           accountId: accountTable.accountId,
         });
 
-      return results;
+      return results.map((result) => {
+        const accountInfo = accounts.find(
+          (account) => account.id == result.accountId
+        )!;
+
+        return {
+          id: result.id,
+          budgetId: result.budgetId,
+          currency: accountInfo.currency,
+          enrollmentId: accountInfo.enrollment_id,
+          institution: accountInfo.institution,
+          lastFour: parseInt(accountInfo.last_four),
+          name: accountInfo.name,
+          type: TypeEnum[
+            accountInfo.type.toUpperCase() as keyof typeof TypeEnum
+          ],
+          subtype:
+            SubtypeEnum[
+              accountInfo.subtype.toUpperCase() as keyof typeof SubtypeEnum
+            ],
+          status:
+            StatusEnum[
+              accountInfo.status.toUpperCase() as keyof typeof StatusEnum
+            ],
+        };
+      });
     } catch {
       throw new Error('Account is already linked');
     }

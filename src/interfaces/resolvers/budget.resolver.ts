@@ -8,6 +8,7 @@ const budgetResolver: Resolvers<ContextType> = {
       return await Budgets.forUser(req.user).get();
     },
   },
+  Mutation: {},
 };
 
 export default budgetResolver;
