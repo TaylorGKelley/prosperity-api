@@ -4,10 +4,9 @@ import { type Resolvers } from '@/types/schema';
 
 const categoryResolver: Resolvers<ContextType> = {
 	Query: {
-		categories: async (_parent, { monthDate, pagination }, { req }, _info) => {
+		categories: async (_parent, { monthDate }, { req }, _info) => {
 			return await Categories.forUser(req.user).getAll({
 				monthDate,
-				pagination,
 			});
 		},
 		category: async (_parent, { id }, { req }, _info) => {

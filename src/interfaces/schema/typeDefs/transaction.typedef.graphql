@@ -1,53 +1,65 @@
 type Query {
 	transactions(
 		monthDate: DateTime!
-		pagination: PaginationInput
-	): [Transaction!]! @auth(permissions: ["default"])
+		pagination: CursorPaginationInput
+	): PaginatedTransaction! @auth(permissions: ["default"])
 	transaction(id: ID!): Transaction! @auth(permissions: ["default"])
 }
 
 type Mutation {
-	createTransaction(input: CreateTransactionInput!): Transaction!
-		@auth(permissions: ["default"])
-	updateTransaction(input: UpdateTransactionInput!): Transaction!
-		@auth(permissions: ["default"])
-	deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
+	syncTransactions: SyncTransactions! @auth(permissions: ["default"])
+	# createTransaction(input: CreateTransactionInput!): Transaction!
+	# 	@auth(permissions: ["default"])
+	# updateTransaction(input: UpdateTransactionInput!): Transaction!
+	# 	@auth(permissions: ["default"])
+	# deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
 }
 
-enum TransactionType {
-	cash
-	debit_card
-	credit_card
-	bank_transfer
-	check
-	gift_card
+enum TransactionStatusEnum {
+	POSTED
+	PENDING
+}
+
+type PaginatedTransaction {
+	items: [Transaction!]!
+	pageInfo: PageInformation
 }
 
 type Transaction {
 	id: ID!
-	title: String!
-	amount: Float!
+	tellerId: ID!
+	accountId: ID!
 	categoryId: ID
-	transactionType: TransactionType!
-	date: DateTime!
-	description: String
+	amount: Float!
+	date: Date!
+	description: String!
+	status: TransactionStatusEnum!
+	type: String!
 }
 
-input CreateTransactionInput {
-	title: String!
-	amount: Float!
-	categoryId: ID!
-	transactionType: TransactionType!
-	date: DateTime!
-	description: String
+enum SyncStatusEnum {
+	SUCCESS
+	ERROR
 }
 
-input UpdateTransactionInput {
-	id: ID!
-	title: String
-	amount: Float
-	categoryId: ID
-	transactionType: TransactionType
-	date: DateTime
-	description: String
+type SyncTransactions {
+	status: SyncStatusEnum!
+	error: String
 }
+
+# input CreateTransactionInput {
+# 	title: String!
+# 	amount: Float!
+# 	categoryId: ID!
+# 	date: DateTime!
+# 	description: String
+# }
+
+# input UpdateTransactionInput {
+# 	id: ID!
+# 	title: String
+# 	amount: Float
+# 	categoryId: ID
+# 	date: DateTime
+# 	description: String
+# }

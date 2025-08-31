@@ -1,5 +1,5 @@
 import { date, decimal, pgTable, uuid, varchar } from 'drizzle-orm/pg-core';
-import { userTable } from './user.schema';
+import { budgetTable } from './budget.schema';
 
 /**
  * startDate - Denotes the month the category should be active for, when updating insert a new record with the current month so that previous months aren't effected.
@@ -9,8 +9,8 @@ import { userTable } from './user.schema';
  */
 export const categoryTable = pgTable('category', {
 	id: uuid('id').primaryKey().defaultRandom(),
-	userId: uuid('user_id')
-		.references(() => userTable.id, {
+	budgetId: uuid('budget_id')
+		.references(() => budgetTable.id, {
 			onDelete: 'cascade',
 		})
 		.notNull(),

@@ -18,13 +18,37 @@ export type Scalars = {
   DateTime: { input: Date; output: Date; }
 };
 
+export type Account = {
+  __typename?: 'Account';
+  budgetId: Scalars['ID']['output'];
+  currency: Scalars['String']['output'];
+  enrollmentId: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  institution: Institution;
+  lastFour: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  status: StatusEnum;
+  subtype: SubtypeEnum;
+  type: TypeEnum;
+};
+
+export type Budget = {
+  __typename?: 'Budget';
+  id: Scalars['ID']['output'];
+};
+
 export type Category = {
   __typename?: 'Category';
   amount: Scalars['Float']['output'];
+  budgetId: Scalars['ID']['output'];
   endDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   startDate: Scalars['DateTime']['output'];
+};
+
+export type CreateAccountInput = {
+  accessToken: Scalars['String']['input'];
 };
 
 export type CreateCategoryInput = {
@@ -32,23 +56,31 @@ export type CreateCategoryInput = {
   name: Scalars['String']['input'];
 };
 
-export type CreateTransactionInput = {
-  amount: Scalars['Float']['input'];
-  categoryId: Scalars['ID']['input'];
-  date: Scalars['DateTime']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  title: Scalars['String']['input'];
-  transactionType: TransactionType;
+export type CursorPaginationInput = {
+  count: Scalars['Int']['input'];
+  cursor: Scalars['String']['input'];
+};
+
+export type Institution = {
+  __typename?: 'Institution';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createAccount: Array<Account>;
+  createBudget: Budget;
   createCategory: Category;
-  createTransaction: Transaction;
+  deleteAccount?: Maybe<Scalars['ID']['output']>;
   deleteCategory: Scalars['ID']['output'];
-  deleteTransaction: Scalars['ID']['output'];
+  syncTransactions: SyncTransactions;
   updateCategory: Category;
-  updateTransaction: Transaction;
+};
+
+
+export type MutationCreateAccountArgs = {
+  input: CreateAccountInput;
 };
 
 
@@ -57,8 +89,8 @@ export type MutationCreateCategoryArgs = {
 };
 
 
-export type MutationCreateTransactionArgs = {
-  input: CreateTransactionInput;
+export type MutationDeleteAccountArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -67,37 +99,41 @@ export type MutationDeleteCategoryArgs = {
 };
 
 
-export type MutationDeleteTransactionArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type MutationUpdateCategoryArgs = {
   input: UpdateCategoryInput;
 };
 
-
-export type MutationUpdateTransactionArgs = {
-  input: UpdateTransactionInput;
+export type PageInformation = {
+  __typename?: 'PageInformation';
+  endCursor: Scalars['String']['output'];
+  hasNextPage: Scalars['Boolean']['output'];
 };
 
-export type PaginationInput = {
-  limit: Scalars['Int']['input'];
-  offset: Scalars['Int']['input'];
+export type PaginatedTransaction = {
+  __typename?: 'PaginatedTransaction';
+  items: Array<Transaction>;
+  pageInfo?: Maybe<PageInformation>;
 };
 
 export type Query = {
   __typename?: 'Query';
+  account: Account;
+  accounts: Array<Account>;
+  budget: Budget;
   categories: Array<Category>;
   category: Category;
   transaction: Transaction;
-  transactions: Array<Transaction>;
+  transactions: PaginatedTransaction;
+};
+
+
+export type QueryAccountArgs = {
+  id: Scalars['String']['input'];
 };
 
 
 export type QueryCategoriesArgs = {
   monthDate?: InputMaybe<Scalars['DateTime']['input']>;
-  pagination?: InputMaybe<PaginationInput>;
 };
 
 
@@ -113,43 +149,62 @@ export type QueryTransactionArgs = {
 
 export type QueryTransactionsArgs = {
   monthDate: Scalars['DateTime']['input'];
-  pagination?: InputMaybe<PaginationInput>;
+  pagination?: InputMaybe<CursorPaginationInput>;
+};
+
+export enum StatusEnum {
+  Closed = 'CLOSED',
+  Open = 'OPEN'
+}
+
+export enum SubtypeEnum {
+  CertificateOfDeposit = 'CERTIFICATE_OF_DEPOSIT',
+  Checking = 'CHECKING',
+  CreditCard = 'CREDIT_CARD',
+  MoneyMarket = 'MONEY_MARKET',
+  Savings = 'SAVINGS',
+  Sweep = 'SWEEP',
+  Treasury = 'TREASURY'
+}
+
+export enum SyncStatusEnum {
+  Error = 'ERROR',
+  Success = 'SUCCESS'
+}
+
+export type SyncTransactions = {
+  __typename?: 'SyncTransactions';
+  error?: Maybe<Scalars['String']['output']>;
+  status: SyncStatusEnum;
 };
 
 export type Transaction = {
   __typename?: 'Transaction';
+  accountId: Scalars['ID']['output'];
   amount: Scalars['Float']['output'];
   categoryId?: Maybe<Scalars['ID']['output']>;
-  date: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
+  date: Scalars['Date']['output'];
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  title: Scalars['String']['output'];
-  transactionType: TransactionType;
+  status: TransactionStatusEnum;
+  tellerId: Scalars['ID']['output'];
+  type: Scalars['String']['output'];
 };
 
-export enum TransactionType {
-  BankTransfer = 'bank_transfer',
-  Cash = 'cash',
-  Check = 'check',
-  CreditCard = 'credit_card',
-  DebitCard = 'debit_card',
-  GiftCard = 'gift_card'
+export enum TransactionStatusEnum {
+  Pending = 'PENDING',
+  Posted = 'POSTED'
+}
+
+export enum TypeEnum {
+  Credit = 'CREDIT',
+  Depository = 'DEPOSITORY'
 }
 
 export type UpdateCategoryInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpdateTransactionInput = {
-  amount?: InputMaybe<Scalars['Float']['input']>;
-  categoryId?: InputMaybe<Scalars['ID']['input']>;
-  date?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-  title?: InputMaybe<Scalars['String']['input']>;
-  transactionType?: InputMaybe<TransactionType>;
 };
 
 
@@ -223,47 +278,81 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Account: ResolverTypeWrapper<Account>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Budget: ResolverTypeWrapper<Budget>;
   Category: ResolverTypeWrapper<Category>;
+  CreateAccountInput: CreateAccountInput;
   CreateCategoryInput: CreateCategoryInput;
-  CreateTransactionInput: CreateTransactionInput;
+  CursorPaginationInput: CursorPaginationInput;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Institution: ResolverTypeWrapper<Institution>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
-  PaginationInput: PaginationInput;
+  PageInformation: ResolverTypeWrapper<PageInformation>;
+  PaginatedTransaction: ResolverTypeWrapper<PaginatedTransaction>;
   Query: ResolverTypeWrapper<{}>;
+  StatusEnum: StatusEnum;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  SubtypeEnum: SubtypeEnum;
+  SyncStatusEnum: SyncStatusEnum;
+  SyncTransactions: ResolverTypeWrapper<SyncTransactions>;
   Transaction: ResolverTypeWrapper<Transaction>;
-  TransactionType: TransactionType;
+  TransactionStatusEnum: TransactionStatusEnum;
+  TypeEnum: TypeEnum;
   UpdateCategoryInput: UpdateCategoryInput;
-  UpdateTransactionInput: UpdateTransactionInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Account: Account;
   Boolean: Scalars['Boolean']['output'];
+  Budget: Budget;
   Category: Category;
+  CreateAccountInput: CreateAccountInput;
   CreateCategoryInput: CreateCategoryInput;
-  CreateTransactionInput: CreateTransactionInput;
+  CursorPaginationInput: CursorPaginationInput;
   Date: Scalars['Date']['output'];
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
+  Institution: Institution;
   Int: Scalars['Int']['output'];
   Mutation: {};
-  PaginationInput: PaginationInput;
+  PageInformation: PageInformation;
+  PaginatedTransaction: PaginatedTransaction;
   Query: {};
   String: Scalars['String']['output'];
+  SyncTransactions: SyncTransactions;
   Transaction: Transaction;
   UpdateCategoryInput: UpdateCategoryInput;
-  UpdateTransactionInput: UpdateTransactionInput;
+};
+
+export type AccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = {
+  budgetId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  enrollmentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  institution?: Resolver<ResolversTypes['Institution'], ParentType, ContextType>;
+  lastFour?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['StatusEnum'], ParentType, ContextType>;
+  subtype?: Resolver<ResolversTypes['SubtypeEnum'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TypeEnum'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type BudgetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Budget'] = ResolversParentTypes['Budget']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  budgetId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -279,39 +368,75 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type InstitutionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Institution'] = ResolversParentTypes['Institution']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createAccount?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'input'>>;
+  createBudget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
-  createTransaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<MutationCreateTransactionArgs, 'input'>>;
+  deleteAccount?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationDeleteAccountArgs, 'id'>>;
   deleteCategory?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
-  deleteTransaction?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteTransactionArgs, 'id'>>;
+  syncTransactions?: Resolver<ResolversTypes['SyncTransactions'], ParentType, ContextType>;
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
-  updateTransaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<MutationUpdateTransactionArgs, 'input'>>;
+};
+
+export type PageInformationResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInformation'] = ResolversParentTypes['PageInformation']> = {
+  endCursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PaginatedTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaginatedTransaction'] = ResolversParentTypes['PaginatedTransaction']> = {
+  items?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType>;
+  pageInfo?: Resolver<Maybe<ResolversTypes['PageInformation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  account?: Resolver<ResolversTypes['Account'], ParentType, ContextType, RequireFields<QueryAccountArgs, 'id'>>;
+  accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType>;
+  budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, Partial<QueryCategoriesArgs>>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
   transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionArgs, 'id'>>;
-  transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<QueryTransactionsArgs, 'monthDate'>>;
+  transactions?: Resolver<ResolversTypes['PaginatedTransaction'], ParentType, ContextType, RequireFields<QueryTransactionsArgs, 'monthDate'>>;
+};
+
+export type SyncTransactionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SyncTransactions'] = ResolversParentTypes['SyncTransactions']> = {
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['SyncStatusEnum'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']> = {
+  accountId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   categoryId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  transactionType?: Resolver<ResolversTypes['TransactionType'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['TransactionStatusEnum'], ParentType, ContextType>;
+  tellerId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
+  Account?: AccountResolvers<ContextType>;
+  Budget?: BudgetResolvers<ContextType>;
   Category?: CategoryResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
+  Institution?: InstitutionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  PageInformation?: PageInformationResolvers<ContextType>;
+  PaginatedTransaction?: PaginatedTransactionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SyncTransactions?: SyncTransactionsResolvers<ContextType>;
   Transaction?: TransactionResolvers<ContextType>;
 };
 

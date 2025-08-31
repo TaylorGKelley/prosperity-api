@@ -1,5 +1,6 @@
 import {
 	date,
+	jsonb,
 	pgEnum,
 	pgTable,
 	real,
@@ -8,30 +9,71 @@ import {
 	varchar,
 } from 'drizzle-orm/pg-core';
 import { categoryTable } from './category.schema';
-import { userTable } from './user.schema';
+import { accountTable } from './account.schema';
 
 export const transactionTypeEnum = pgEnum('transaction_type', [
-	'cash',
-	'debit_card',
-	'credit_card',
-	'bank_transfer',
-	'check',
-	'gift_card',
+	'CASH',
+	'DEBIT_CARD',
+	'CREDIT_CARD',
+	'BANK_TRANSFER',
+	'CHECK',
+	'GIFT_CARD',
 ]);
+
+export const statusEnum = pgEnum('status', ['POSTED', 'PENDING']);
+
+export type TransactionMetadata = {
+	processingStatus: 'pending' | 'complete';
+	category:
+		| 'accommodation'
+		| 'advertising'
+		| 'bar'
+		| 'charity'
+		| 'clothing'
+		| 'dining'
+		| 'education'
+		| 'electronics'
+		| 'entertainment'
+		| 'fuel'
+		| 'general'
+		| 'groceries'
+		| 'health'
+		| 'home'
+		| 'income'
+		| 'insurance'
+		| 'investment'
+		| 'loan'
+		| 'office'
+		| 'phone'
+		| 'service'
+		| 'shopping'
+		| 'software'
+		| 'sport'
+		| 'tax'
+		| 'transport'
+		| 'transportation'
+		| 'utilities';
+	counterparty: {
+		name: string | null;
+		type: 'organization' | 'person';
+	};
+};
 
 export const transactionTable = pgTable('transaction', {
 	id: uuid('id').primaryKey().defaultRandom(),
-	userId: uuid('user_id')
-		.references(() => userTable.id, {
+	tellerId: varchar('teller_id', { length: 256 }).unique().notNull(),
+	accountId: uuid('account_id')
+		.references(() => accountTable.id, {
 			onDelete: 'cascade',
 		})
 		.notNull(),
 	categoryId: uuid('category_id').references(() => categoryTable.id, {
 		onDelete: 'set null',
 	}),
-	title: varchar('title').notNull(),
 	amount: real('amount').notNull(),
-	transactionType: transactionTypeEnum('transaction_type').notNull(),
 	date: date('date', { mode: 'date' }).notNull().defaultNow(),
-	description: text('description'),
+	description: text('description').notNull(),
+	status: statusEnum('status').notNull(),
+	type: varchar('type', { length: 128 }).notNull(),
+	metadata: jsonb('metadata').$type<TransactionMetadata>(),
 });
