@@ -1,219 +1,220 @@
 import { type UUID } from 'node:crypto';
 import {
-  type Category,
-  type QueryCategoriesArgs,
-  type QueryCategoryArgs,
-  type MutationCreateCategoryArgs,
-  type MutationUpdateCategoryArgs,
-  type MutationDeleteCategoryArgs,
+	type Category,
+	type QueryCategoriesArgs,
+	type QueryCategoryArgs,
+	type MutationCreateCategoryArgs,
+	type MutationUpdateCategoryArgs,
+	type MutationDeleteCategoryArgs,
 } from '@/types/schema';
 import { type User } from '@/types/User';
 import { db } from '@/infrastructure/database';
 import { categoryTable } from '@/infrastructure/database/schema/category.schema';
 import {
-  and,
-  asc,
-  eq,
-  getTableColumns,
-  gte,
-  isNull,
-  lt,
-  or,
+	and,
+	asc,
+	eq,
+	getTableColumns,
+	gte,
+	isNull,
+	lt,
+	or,
 } from 'drizzle-orm';
-import { budgetTable, userTable } from '@/infrastructure/database/schema';
+import {
+	budgetTable,
+	transactionTable,
+	userTable,
+} from '@/infrastructure/database/schema';
 
 export class Categories {
-  public static forUser(user: User | null) {
-    if (user === null) throw new Error('Unauthorized');
+	public static forUser(user: User | null) {
+		if (user === null) throw new Error('Unauthorized');
 
-    return new Categories(user.id);
-  }
+		return new Categories(user.id);
+	}
 
-  private _userId: UUID;
-  public constructor(userId: UUID) {
-    this._userId = userId;
-  }
+	private _userId: UUID;
+	public constructor(userId: UUID) {
+		this._userId = userId;
+	}
 
-  public async getAll({
-    monthDate,
-    pagination,
-  }: QueryCategoriesArgs): Promise<Category[]> {
-    const query = db
-      .select(getTableColumns(categoryTable))
-      .from(categoryTable)
-      .innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
-      .innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
-      .where(
-        and(
-          eq(userTable.id, this._userId),
-          !monthDate
-            ? undefined
-            : gte(
-                categoryTable.startDate,
-                new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
-              ),
-          !monthDate
-            ? undefined
-            : or(
-                isNull(categoryTable.endDate),
-                lt(
-                  categoryTable.endDate,
-                  new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 1)
-                )
-              )
-        )
-      )
-      .orderBy(asc(categoryTable.name));
+	public async getAll({ monthDate }: QueryCategoriesArgs): Promise<Category[]> {
+		const result = await db
+			.select(getTableColumns(categoryTable))
+			.from(categoryTable)
+			.innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
+			.innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
+			.where(
+				and(
+					eq(userTable.id, this._userId),
+					!monthDate
+						? undefined
+						: gte(
+								categoryTable.startDate,
+								new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
+						  ),
+					!monthDate
+						? undefined
+						: or(
+								isNull(categoryTable.endDate),
+								lt(
+									categoryTable.endDate,
+									new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 1)
+								)
+						  )
+				)
+			)
+			.orderBy(asc(categoryTable.name));
 
-    if (pagination?.limit) query.limit(pagination.limit);
-    if (pagination?.offset) query.offset(pagination.offset);
+		return result;
+	}
 
-    const result = (await query) as Category[];
+	public async get({ id }: QueryCategoryArgs): Promise<Category | undefined> {
+		const result = (
+			await db
+				.select(getTableColumns(categoryTable))
+				.from(categoryTable)
+				.innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
+				.innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
+				.where(and(eq(userTable.id, this._userId), eq(categoryTable.id, id)))
+		)?.[0];
 
-    return result;
-  }
+		return result as Category;
+	}
 
-  public async get({ id }: QueryCategoryArgs): Promise<Category | undefined> {
-    const result = (
-      await db
-        .select(getTableColumns(categoryTable))
-        .from(categoryTable)
-        .innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
-        .innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
-        .where(and(eq(userTable.id, this._userId), eq(categoryTable.id, id)))
-    )?.[0];
+	public async create({
+		input,
+	}: MutationCreateCategoryArgs): Promise<Category> {
+		// Get the user's budget
+		const budget = (
+			await db
+				.select(getTableColumns(budgetTable))
+				.from(budgetTable)
+				.innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
+				.where(eq(userTable.id, this._userId))
+		)[0];
 
-    return result as Category;
-  }
+		const result = (
+			await db
+				.insert(categoryTable)
+				.values({
+					...input,
+					budgetId: budget.id,
+					// starDate: new Date(), // Defaults to now
+				})
+				.returning()
+		)[0] as Category;
 
-  public async create({
-    input,
-  }: MutationCreateCategoryArgs): Promise<Category> {
-    // Get the user's budget
-    const budget = (
-      await db
-        .select(getTableColumns(budgetTable))
-        .from(budgetTable)
-        .innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
-        .where(eq(userTable.id, this._userId))
-    )[0];
+		return result;
+	}
 
-    const result = (
-      await db
-        .insert(categoryTable)
-        .values({
-          ...input,
-          budgetId: budget.id,
-          // starDate: new Date(), // Defaults to now
-        })
-        .returning()
-    )[0] as Category;
+	public async update({
+		input,
+	}: MutationUpdateCategoryArgs): Promise<Category> {
+		const category = (
+			await db
+				.select(getTableColumns(categoryTable))
+				.from(categoryTable)
+				.innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
+				.innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
+				.where(
+					and(eq(categoryTable.id, input.id), eq(userTable.id, this._userId))
+				)
+		)[0];
 
-    return result;
-  }
+		if (!category) throw new Error('Invalid category id');
 
-  public async update({
-    input,
-  }: MutationUpdateCategoryArgs): Promise<Category> {
-    const category = (
-      await db
-        .select(getTableColumns(categoryTable))
-        .from(categoryTable)
-        .innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
-        .innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
-        .where(
-          and(eq(categoryTable.id, input.id), eq(userTable.id, this._userId))
-        )
-    )[0];
+		let result: typeof categoryTable.$inferSelect;
 
-    if (!category) throw new Error('Invalid category id');
+		// If StartDate is < this month, create a new category and set the old end date to last month
+		if (category.startDate < new Date(new Date().setDate(1))) {
+			result = (
+				await db
+					.update(categoryTable)
+					.set({
+						name: input.name !== null ? input.name : undefined,
+						amount: input.amount !== null ? input.amount : undefined,
+					})
+					.where(eq(categoryTable.id, category.id))
+					.returning()
+			)[0];
+		} else {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(categoryTable)
+					.set({
+						endDate: new Date(
+							new Date().getFullYear(),
+							new Date().getMonth() - 1,
+							1
+						),
+					})
+					.where(eq(categoryTable.id, category.id));
 
-    let result: typeof categoryTable.$inferSelect;
+				result = (
+					await tx
+						.insert(categoryTable)
+						.values({
+							name: input.name != null ? input.name : '',
+							budgetId: category.budgetId,
+							amount: input.amount != null ? input.amount! : 0,
+						})
+						.returning()
+				)[0];
+			});
+		}
 
-    // If StartDate is < this month, create a new category and set the old end date to last month
-    if (category.startDate < new Date(new Date().setDate(1))) {
-      result = (
-        await db
-          .update(categoryTable)
-          .set({
-            name: input.name !== null ? input.name : undefined,
-            amount: input.amount !== null ? input.amount : undefined,
-          })
-          .where(eq(categoryTable.id, category.id))
-          .returning()
-      )[0];
-    } else {
-      await db.transaction(async (tx) => {
-        await tx
-          .update(categoryTable)
-          .set({
-            endDate: new Date(
-              new Date().getFullYear(),
-              new Date().getMonth() - 1,
-              1
-            ),
-          })
-          .where(eq(categoryTable.id, category.id));
+		return result!;
+	}
 
-        result = (
-          await tx
-            .insert(categoryTable)
-            .values({
-              name: input.name != null ? input.name : '',
-              budgetId: category.budgetId,
-              amount: input.amount != null ? input.amount! : 0,
-            })
-            .returning()
-        )[0];
-      });
-    }
+	public async delete({ id }: MutationDeleteCategoryArgs): Promise<UUID> {
+		// Setting end dates will maintian categories for past months so that users can
+		// view their history without it being altered from deleting categories in the future
+		const category = await this.get({ id });
+		if (
+			!category ||
+			(category?.endDate &&
+				category?.endDate <
+					new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+		)
+			// This prevents deleting categories that have already been ended
+			throw new Error('Cannot find a category with that Id');
 
-    return result!;
-  }
+		let result: Category | undefined;
+		if (category.startDate.getMonth() < new Date().getMonth()) {
+			result = (
+				await db
+					.update(categoryTable)
+					.set({
+						endDate: new Date(
+							new Date().getFullYear(),
+							new Date().getMonth() - 1,
+							1
+						),
+					})
+					.returning()
+			)[0] as Category;
 
-  public async delete({ id }: MutationDeleteCategoryArgs): Promise<UUID> {
-    // Setting end dates will maintian categories for past months so that users can
-    // view their history without it being altered from deleting categories in the future
+			// TODO: Update any transactions at or after end date of category + 1 month (1st of that month), set to null
+			await db
+				.update(transactionTable)
+				.set({ categoryId: null })
+				.where(eq(transactionTable.id, result.id));
+		} else {
+			// else if (startDate >= this month) then delete
+			result = (
+				await db
+					.delete(categoryTable)
+					.where(
+						and(
+							eq(categoryTable.budgetId, category.budgetId),
+							eq(categoryTable.id, id)
+						)
+					)
+					.returning()
+			)[0] as Category;
+		}
 
-    const category = await this.get({ id });
-    if (
-      !category ||
-      (category?.endDate &&
-        category?.endDate <
-          new Date(new Date().getFullYear(), new Date().getMonth(), 1))
-    )
-      // This prevents deleting categories that have already been ended
-      throw new Error('Cannot find a category with that Id');
-
-    let result: Category | undefined;
-    if (category.startDate.getMonth() < new Date().getMonth()) {
-      result = (
-        await db
-          .update(categoryTable)
-          .set({
-            endDate: new Date(
-              new Date().getFullYear(),
-              new Date().getMonth() - 1,
-              1
-            ),
-          })
-          .returning()
-      )[0] as Category;
-    } else {
-      // startDate >= this month
-      result = (
-        await db
-          .delete(categoryTable)
-          .where(
-            and(
-              eq(categoryTable.budgetId, category.budgetId),
-              eq(categoryTable.id, id)
-            )
-          )
-          .returning()
-      )[0] as Category;
-    }
-
-    return result.id as UUID;
-  }
+		return result.id as UUID;
+	}
 }

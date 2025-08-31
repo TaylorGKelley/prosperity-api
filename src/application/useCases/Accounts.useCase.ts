@@ -1,8 +1,8 @@
 import { db } from '@/infrastructure/database';
 import {
-  accountTable,
-  budgetTable,
-  userTable,
+	accountTable,
+	budgetTable,
+	userTable,
 } from '@/infrastructure/database/schema';
 import { type User } from '@/types/User';
 import { and, eq, getTableColumns } from 'drizzle-orm';
@@ -10,197 +10,197 @@ import { type UUID } from 'node:crypto';
 import { AccessToken } from '../utils/AccessToken';
 import TellerClient from '@/infrastructure/configuration/teller-client';
 import {
-  StatusEnum,
-  SubtypeEnum,
-  TypeEnum,
-  type Account,
-  type MutationCreateAccountArgs,
-  type MutationDeleteAccountArgs,
-  type QueryAccountArgs,
+	StatusEnum,
+	SubtypeEnum,
+	TypeEnum,
+	type Account,
+	type MutationCreateAccountArgs,
+	type MutationDeleteAccountArgs,
+	type QueryAccountArgs,
 } from '@/types/schema';
 import snakeToPascalCase from '../utils/snakeToPascalCase';
 
 export class Accounts {
-  public static forUser(user: User | null) {
-    if (user === null) throw new Error('Unauthorized');
+	public static forUser(user: User | null) {
+		if (user === null) throw new Error('Unauthorized');
 
-    return new Accounts(user.id);
-  }
+		return new Accounts(user.id);
+	}
 
-  private _userId: UUID;
-  public constructor(userId: UUID) {
-    this._userId = userId;
-  }
+	private _userId: UUID;
+	public constructor(userId: UUID) {
+		this._userId = userId;
+	}
 
-  public async getAll(): Promise<Account[]> {
-    const accountRecords = await db
-      .select(getTableColumns(accountTable))
-      .from(accountTable)
-      .innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
-      .innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
-      .where(eq(userTable.id, this._userId));
+	public async getAll(): Promise<Account[]> {
+		const accountRecords = await db
+			.select(getTableColumns(accountTable))
+			.from(accountTable)
+			.innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
+			.innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
+			.where(eq(userTable.id, this._userId));
 
-    const result: Account[] = [];
-    for (const accountRecord of accountRecords) {
-      const accessToken = AccessToken.decrypt(
-        accountRecord.accessToken,
-        accountRecord.accessTokenIV
-      );
+		const result: Account[] = [];
+		for (const accountRecord of accountRecords) {
+			const accessToken = AccessToken.decrypt(
+				accountRecord.accessToken,
+				accountRecord.accessTokenIV
+			);
 
-      const accountInfo = await new TellerClient(accessToken).getAccount(
-        accountRecord.accountId
-      );
+			const accountInfo = await new TellerClient(accessToken).getAccount(
+				accountRecord.tellerId
+			);
 
-      result.push({
-        id: accountRecord.id,
-        budgetId: accountRecord.budgetId,
-        currency: accountInfo.currency,
-        enrollmentId: accountInfo.enrollment_id,
-        institution: accountInfo.institution,
-        lastFour: parseInt(accountInfo.last_four),
-        name: accountInfo.name,
-        type: TypeEnum[
-          snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
-        ],
-        subtype:
-          SubtypeEnum[
-            snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
-          ],
-        status:
-          StatusEnum[
-            snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
-          ],
-      });
-    }
+			result.push({
+				id: accountRecord.id,
+				budgetId: accountRecord.budgetId,
+				currency: accountInfo.currency,
+				enrollmentId: accountInfo.enrollment_id,
+				institution: accountInfo.institution,
+				lastFour: parseInt(accountInfo.last_four),
+				name: accountInfo.name,
+				type: TypeEnum[
+					snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+				],
+				subtype:
+					SubtypeEnum[
+						snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+					],
+				status:
+					StatusEnum[
+						snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+					],
+			});
+		}
 
-    return result;
-  }
-  public async get({ id }: QueryAccountArgs): Promise<Account> {
-    const result = (
-      await db
-        .select(getTableColumns(accountTable))
-        .from(accountTable)
-        .innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
-        .innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
-        .where(and(eq(accountTable.id, id), eq(userTable.id, this._userId)))
-    )[0];
+		return result;
+	}
+	public async get({ id }: QueryAccountArgs): Promise<Account> {
+		const result = (
+			await db
+				.select(getTableColumns(accountTable))
+				.from(accountTable)
+				.innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
+				.innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
+				.where(and(eq(accountTable.id, id), eq(userTable.id, this._userId)))
+		)[0];
 
-    const accessToken = AccessToken.decrypt(
-      result.accessToken,
-      result.accessTokenIV
-    );
+		const accessToken = AccessToken.decrypt(
+			result.accessToken,
+			result.accessTokenIV
+		);
 
-    const accountInfo = await new TellerClient(accessToken).getAccount(
-      result.accountId
-    );
+		const accountInfo = await new TellerClient(accessToken).getAccount(
+			result.tellerId
+		);
 
-    return {
-      id: result.id,
-      budgetId: result.budgetId,
-      currency: accountInfo.currency,
-      enrollmentId: accountInfo.enrollment_id,
-      institution: accountInfo.institution,
-      lastFour: parseInt(accountInfo.last_four),
-      name: accountInfo.name,
-      type: TypeEnum[
-        snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
-      ],
-      subtype:
-        SubtypeEnum[
-          snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
-        ],
-      status:
-        StatusEnum[
-          snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
-        ],
-    };
-  }
+		return {
+			id: result.id,
+			budgetId: result.budgetId,
+			currency: accountInfo.currency,
+			enrollmentId: accountInfo.enrollment_id,
+			institution: accountInfo.institution,
+			lastFour: parseInt(accountInfo.last_four),
+			name: accountInfo.name,
+			type: TypeEnum[
+				snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+			],
+			subtype:
+				SubtypeEnum[
+					snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+				],
+			status:
+				StatusEnum[
+					snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+				],
+		};
+	}
 
-  public async create({
-    input,
-  }: MutationCreateAccountArgs): Promise<Account[]> {
-    const { iv: accessTokenIV, encryptedToken: accessToken } =
-      AccessToken.encrypt(input.accessToken);
+	public async create({
+		input,
+	}: MutationCreateAccountArgs): Promise<Account[]> {
+		const { iv: accessTokenIV, encryptedToken: accessToken } =
+			AccessToken.encrypt(input.accessToken);
 
-    const user = (
-      await db
-        .select({ budgetId: userTable.budgetId })
-        .from(userTable)
-        .where(eq(userTable.id, this._userId))
-    )[0];
+		const user = (
+			await db
+				.select({ budgetId: userTable.budgetId })
+				.from(userTable)
+				.where(eq(userTable.id, this._userId))
+		)[0];
 
-    if (!user?.budgetId)
-      throw new Error('Please create a budget before linking accounts');
+		if (!user?.budgetId)
+			throw new Error('Please create a budget before linking accounts');
 
-    const accounts = await new TellerClient(input.accessToken).getAccounts();
+		const accounts = await new TellerClient(input.accessToken).getAccounts();
 
-    try {
-      const results = await db
-        .insert(accountTable)
-        .values(
-          accounts.map((account) => ({
-            budgetId: user.budgetId!,
-            accountId: account.id,
-            accessToken,
-            accessTokenIV,
-          }))
-        )
-        .returning({
-          id: accountTable.id,
-          budgetId: accountTable.budgetId,
-          accountId: accountTable.accountId,
-        });
+		try {
+			const results = await db
+				.insert(accountTable)
+				.values(
+					accounts.map((account) => ({
+						budgetId: user.budgetId!,
+						tellerId: account.id,
+						accessToken,
+						accessTokenIV,
+					}))
+				)
+				.returning({
+					id: accountTable.id,
+					budgetId: accountTable.budgetId,
+					tellerId: accountTable.tellerId,
+				});
 
-      return results.map((result) => {
-        const accountInfo = accounts.find(
-          (account) => account.id == result.accountId
-        )!;
+			return results.map((result) => {
+				const accountInfo = accounts.find(
+					(account) => account.id == result.tellerId
+				)!;
 
-        return {
-          id: result.id,
-          budgetId: result.budgetId,
-          currency: accountInfo.currency,
-          enrollmentId: accountInfo.enrollment_id,
-          institution: accountInfo.institution,
-          lastFour: parseInt(accountInfo.last_four),
-          name: accountInfo.name,
-          type: TypeEnum[
-            snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
-          ],
-          subtype:
-            SubtypeEnum[
-              snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
-            ],
-          status:
-            StatusEnum[
-              snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
-            ],
-        };
-      });
-    } catch {
-      throw new Error('Account is already linked');
-    }
-  }
+				return {
+					id: result.id,
+					budgetId: result.budgetId,
+					currency: accountInfo.currency,
+					enrollmentId: accountInfo.enrollment_id,
+					institution: accountInfo.institution,
+					lastFour: parseInt(accountInfo.last_four),
+					name: accountInfo.name,
+					type: TypeEnum[
+						snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+					],
+					subtype:
+						SubtypeEnum[
+							snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+						],
+					status:
+						StatusEnum[
+							snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+						],
+				};
+			});
+		} catch {
+			throw new Error('Account is already linked');
+		}
+	}
 
-  public async delete({
-    id,
-  }: MutationDeleteAccountArgs): Promise<Account['id']> {
-    const result = (
-      await db
-        .delete(accountTable)
-        .where(and(eq(accountTable.id, id)))
-        .returning()
-    )[0];
+	public async delete({
+		id,
+	}: MutationDeleteAccountArgs): Promise<Account['id']> {
+		const result = (
+			await db
+				.delete(accountTable)
+				.where(and(eq(accountTable.id, id)))
+				.returning()
+		)[0];
 
-    if (!result) throw new Error('Account with that Id was not found');
+		if (!result) throw new Error('Account with that Id was not found');
 
-    const accessToken = AccessToken.decrypt(
-      result.accessToken,
-      result.accessTokenIV
-    );
+		const accessToken = AccessToken.decrypt(
+			result.accessToken,
+			result.accessTokenIV
+		);
 
-    await new TellerClient(accessToken).deleteAccount(id);
+		await new TellerClient(accessToken).deleteAccount(id);
 
-    return result.id;
-  }
+		return result.id;
+	}
 }
