@@ -1,5 +1,5 @@
 type Query {
-	categories(monthDate: DateTime): [Category!]! @auth(permissions: ["default"])
+	categories(monthDate: Date!): [Category!]! @auth(permissions: ["default"])
 	category(id: ID!): Category! @auth(permissions: ["default"])
 }
 
@@ -16,8 +16,8 @@ type Category {
 	budgetId: ID!
 	name: String!
 	amount: Float!
-	startDate: DateTime!
-	endDate: DateTime
+	startDate: Date!
+	endDate: Date
 }
 
 input CreateCategoryInput {

@@ -17,7 +17,17 @@ import {
 	SyncStatusEnum,
 } from '@/types/schema';
 import { User } from '@/types/User';
-import { and, asc, desc, eq, getTableColumns, gte, lt, or } from 'drizzle-orm';
+import {
+	and,
+	asc,
+	desc,
+	eq,
+	getTableColumns,
+	gte,
+	lt,
+	lte,
+	or,
+} from 'drizzle-orm';
 import { type UUID } from 'node:crypto';
 import Cursor from '../utils/Cursor';
 import { AccessToken } from '../utils/AccessToken';
@@ -63,17 +73,20 @@ export class Transactions {
 					eq(userTable.id, this._userId),
 					!monthDate
 						? undefined
-						: gte(
+						: lte(
 								transactionTable.date,
-								new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
+								new Date(
+									monthDate.getUTCFullYear(),
+									monthDate.getUTCMonth() + 1,
+									0
+								)
 						  ),
 					!monthDate
 						? undefined
-						: lt(
+						: gte(
 								transactionTable.date,
-								new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 1)
-						  ),
-					cursorFilter
+								new Date(monthDate.getUTCFullYear(), monthDate.getUTCMonth(), 1)
+						  )
 				)
 			)
 			.orderBy(desc(transactionTable.date), desc(transactionTable.id));

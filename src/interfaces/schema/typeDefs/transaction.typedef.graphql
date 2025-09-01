@@ -1,6 +1,6 @@
 type Query {
 	transactions(
-		monthDate: DateTime!
+		monthDate: Date!
 		pagination: CursorPaginationInput
 	): PaginatedTransaction! @auth(permissions: ["default"])
 	transaction(id: ID!): Transaction! @auth(permissions: ["default"])

@@ -10,21 +10,13 @@ import {
 import { type User } from '@/types/User';
 import { db } from '@/infrastructure/database';
 import { categoryTable } from '@/infrastructure/database/schema/category.schema';
-import {
-	and,
-	asc,
-	eq,
-	getTableColumns,
-	gte,
-	isNull,
-	lt,
-	or,
-} from 'drizzle-orm';
+import { and, asc, eq, getTableColumns, gte, isNull, or } from 'drizzle-orm';
 import {
 	budgetTable,
 	transactionTable,
 	userTable,
 } from '@/infrastructure/database/schema';
+import { lte } from 'drizzle-orm';
 
 export class Categories {
 	public static forUser(user: User | null) {
@@ -49,17 +41,25 @@ export class Categories {
 					eq(userTable.id, this._userId),
 					!monthDate
 						? undefined
-						: gte(
+						: lte(
 								categoryTable.startDate,
-								new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
+								new Date(
+									monthDate.getUTCFullYear(),
+									monthDate.getUTCMonth() + 1,
+									0
+								)
 						  ),
 					!monthDate
 						? undefined
 						: or(
 								isNull(categoryTable.endDate),
-								lt(
+								gte(
 									categoryTable.endDate,
-									new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 1)
+									new Date(
+										monthDate.getUTCFullYear(),
+										monthDate.getUTCMonth(),
+										1
+									)
 								)
 						  )
 				)
@@ -195,7 +195,7 @@ export class Categories {
 					.returning()
 			)[0] as Category;
 
-			// TODO: Update any transactions at or after end date of category + 1 month (1st of that month), set to null
+			// Update any transactions at or after end date of category + 1 month (1st of that month), set to null
 			await db
 				.update(transactionTable)
 				.set({ categoryId: null })
