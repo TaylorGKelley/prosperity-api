@@ -109,15 +109,18 @@ export class Transactions {
 					  })
 					: null
 				: undefined;
-
 		return {
-			items: items.map((item) => ({
-				...item,
-				status:
-					TransactionStatusEnum[
-						item.status as keyof typeof TransactionStatusEnum
-					],
-			})),
+			items: items.map((item) => {
+				return {
+					...item,
+					status:
+						TransactionStatusEnum[
+							snakeToPascalCase(
+								item.status
+							) as keyof typeof TransactionStatusEnum
+						],
+				};
+			}),
 			pageInfo: pagination && {
 				hasNextPage: hasNextPage!,
 				endCursor: endCursor!,
@@ -144,7 +147,7 @@ export class Transactions {
 			...result,
 			status:
 				TransactionStatusEnum[
-					result.status as keyof typeof TransactionStatusEnum
+					snakeToPascalCase(result.status) as keyof typeof TransactionStatusEnum
 				],
 		};
 	}
@@ -157,66 +160,78 @@ export class Transactions {
 				.innerJoin(userTable, eq(userTable.budgetId, accountTable.budgetId))
 				.where(eq(userTable.id, this._userId));
 
-			// Get transaction's for each account
-			const transactions: (typeof transactionTable.$inferInsert)[] = [];
-			for (const account of accounts) {
-				const lastTransaction:
-					| typeof transactionTable.$inferSelect
-					| undefined = (
-					await db
-						.select()
-						.from(transactionTable)
-						.where(eq(transactionTable.accountId, account.id))
-						.orderBy(asc(transactionTable.date), asc(transactionTable.id))
-						.limit(1)
-				)[0];
+			await db.transaction(async (tw) => {
+				try {
+					// Get transaction's for each account
+					const transactions: (typeof transactionTable.$inferInsert)[] = [];
+					for (const account of accounts) {
+						// Clear out any *Pending* transaction's to resync incase they are now posted
+						tw.delete(transactionTable).where(
+							eq(transactionTable.status, 'PENDING')
+						);
 
-				const accessToken = AccessToken.decrypt(
-					account.accessToken,
-					account.accessTokenIV
-				);
+						const lastTransaction:
+							| typeof transactionTable.$inferSelect
+							| undefined = (
+							await tw
+								.select()
+								.from(transactionTable)
+								.where(eq(transactionTable.accountId, account.id))
+								.orderBy(asc(transactionTable.date), asc(transactionTable.id))
+								.limit(1)
+						)[0];
 
-				const accountTransactions = await new TellerClient(
-					accessToken
-				).getTransactions(
-					account.tellerId,
-					lastTransaction?.tellerId
-						? {
-								from_id: lastTransaction.tellerId,
-						  }
-						: undefined
-				);
+						const accessToken = AccessToken.decrypt(
+							account.accessToken,
+							account.accessTokenIV
+						);
 
-				accountTransactions.forEach((transaction) =>
-					transactions.push({
-						tellerId: transaction.id,
-						accountId: account.id,
-						categoryId: null, // user can set it later
-						amount: parseFloat(transaction.amount),
-						date: new Date(transaction.date),
-						description: transaction.description,
-						status:
-							TransactionStatusEnum[
-								snakeToPascalCase(
-									transaction.status
-								) as keyof typeof TransactionStatusEnum
-							],
-						type: transaction.type,
-						metadata: {
-							category: transaction.details.category,
-							counterparty: {
-								name: transaction.details.counterparty.name,
-								type: transaction.details.counterparty.type as
-									| 'organization'
-									| 'person',
-							},
-							processingStatus: transaction.details.processing_status,
-						},
-					})
-				);
-			}
-			if (transactions.length > 0)
-				await db.insert(transactionTable).values(transactions);
+						const accountTransactions = await new TellerClient(
+							accessToken
+						).getTransactions(
+							account.tellerId,
+							lastTransaction?.tellerId
+								? {
+										from_id: lastTransaction.tellerId,
+								  }
+								: undefined
+						);
+
+						accountTransactions.forEach((transaction) =>
+							transactions.push({
+								tellerId: transaction.id,
+								accountId: account.id,
+								categoryId: null, // user can set it later
+								amount: parseFloat(transaction.amount),
+								date: new Date(transaction.date),
+								description: transaction.description,
+								status:
+									TransactionStatusEnum[
+										snakeToPascalCase(
+											transaction.status
+										) as keyof typeof TransactionStatusEnum
+									],
+								type: transaction.type,
+								metadata: {
+									category: transaction.details.category,
+									counterparty: {
+										name: transaction.details.counterparty.name,
+										type: transaction.details.counterparty.type as
+											| 'organization'
+											| 'person',
+									},
+									processingStatus: transaction.details.processing_status,
+								},
+							})
+						);
+					}
+					if (transactions.length > 0)
+						await tw.insert(transactionTable).values(transactions);
+				} catch (error) {
+					await tw.rollback();
+					throw error; // rethrow error so top level function sees it
+				}
+			});
 
 			return {
 				status: SyncStatusEnum.Success,
