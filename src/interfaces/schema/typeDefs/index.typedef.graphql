@@ -1,9 +1,9 @@
 input CursorPaginationInput {
-	count: Int!
-	cursor: String! # JSON encoded object
+  count: Int!
+  cursor: String # JSON encoded object
 }
 
 type PageInformation {
-	hasNextPage: Boolean!
-	endCursor: String!
+  hasNextPage: Boolean
+  endCursor: String
 }
