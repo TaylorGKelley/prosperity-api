@@ -31,7 +31,7 @@ type Transaction {
   accountId: ID!
   categoryId: ID
   amount: Float!
-  date: Date!
+  date: DateTime!
   description: String!
   status: TransactionStatusEnum!
   type: String!

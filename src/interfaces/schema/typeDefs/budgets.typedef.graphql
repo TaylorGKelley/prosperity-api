@@ -1,5 +1,5 @@
 type Query {
-  budget: Budget! @auth(permissions: ["default"])
+  budget: Budget @auth(permissions: ["default"])
 }
 
 type Mutation {

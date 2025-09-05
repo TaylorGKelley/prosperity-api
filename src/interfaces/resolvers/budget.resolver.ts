@@ -8,7 +8,11 @@ const budgetResolver: Resolvers<ContextType> = {
       return await Budgets.forUser(req.user).get();
     },
   },
-  Mutation: {},
+  Mutation: {
+    createBudget: async (_parent, _args, { req }, _info) => {
+      return await Budgets.forUser(req.user).create();
+    },
+  },
 };
 
 export default budgetResolver;

@@ -55,10 +55,11 @@ export class Transactions {
     // Set the filter for pagination if it's part of the request
     if (pagination?.cursor) {
       const { date, id } = Cursor.decode(pagination.cursor);
+      const filterDate = new Date(date);
 
       cursorFilter = or(
-        lt(transactionTable.date, date), // smaller date
-        and(eq(transactionTable.date, date), lt(transactionTable.id, id)) // same date but smaller id
+        lt(transactionTable.date, filterDate), // smaller date
+        and(eq(transactionTable.date, filterDate), lt(transactionTable.id, id)) // same date but smaller id
       );
     }
 
@@ -86,7 +87,8 @@ export class Transactions {
             : gte(
                 transactionTable.date,
                 new Date(monthDate.getUTCFullYear(), monthDate.getUTCMonth(), 1)
-              )
+              ),
+          cursorFilter
         )
       )
       .orderBy(desc(transactionTable.date), desc(transactionTable.id));
@@ -122,6 +124,7 @@ export class Transactions {
         };
       }),
       pageInfo: pagination && {
+        length: items.length,
         hasNextPage: hasNextPage!,
         endCursor: endCursor!,
       },
@@ -159,7 +162,6 @@ export class Transactions {
         .from(accountTable)
         .innerJoin(userTable, eq(userTable.budgetId, accountTable.budgetId))
         .where(eq(userTable.id, this._userId));
-      console.log(accounts);
 
       await db.transaction(async (tw) => {
         try {

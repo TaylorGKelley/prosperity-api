@@ -41,10 +41,10 @@ export type Category = {
   __typename?: 'Category';
   amount: Scalars['Float']['output'];
   budgetId: Scalars['ID']['output'];
-  endDate?: Maybe<Scalars['Date']['output']>;
+  endDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  startDate: Scalars['Date']['output'];
+  startDate: Scalars['DateTime']['output'];
 };
 
 export type CreateAccountInput = {
@@ -58,7 +58,7 @@ export type CreateCategoryInput = {
 
 export type CursorPaginationInput = {
   count: Scalars['Int']['input'];
-  cursor: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Institution = {
@@ -105,8 +105,9 @@ export type MutationUpdateCategoryArgs = {
 
 export type PageInformation = {
   __typename?: 'PageInformation';
-  endCursor: Scalars['String']['output'];
+  endCursor?: Maybe<Scalars['String']['output']>;
   hasNextPage: Scalars['Boolean']['output'];
+  length: Scalars['Int']['output'];
 };
 
 export type PaginatedTransaction = {
@@ -119,7 +120,7 @@ export type Query = {
   __typename?: 'Query';
   account: Account;
   accounts: Array<Account>;
-  budget: Budget;
+  budget?: Maybe<Budget>;
   categories: Array<Category>;
   category: Category;
   transaction: Transaction;
@@ -133,7 +134,7 @@ export type QueryAccountArgs = {
 
 
 export type QueryCategoriesArgs = {
-  monthDate: Scalars['Date']['input'];
+  monthDate: Scalars['DateTime']['input'];
 };
 
 
@@ -148,7 +149,7 @@ export type QueryTransactionArgs = {
 
 
 export type QueryTransactionsArgs = {
-  monthDate: Scalars['Date']['input'];
+  monthDate: Scalars['DateTime']['input'];
   pagination?: InputMaybe<CursorPaginationInput>;
 };
 
@@ -183,7 +184,7 @@ export type Transaction = {
   accountId: Scalars['ID']['output'];
   amount: Scalars['Float']['output'];
   categoryId?: Maybe<Scalars['ID']['output']>;
-  date: Scalars['Date']['output'];
+  date: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   status: TransactionStatusEnum;
@@ -353,10 +354,10 @@ export type BudgetResolvers<ContextType = any, ParentType extends ResolversParen
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   budgetId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  startDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -385,8 +386,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type PageInformationResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInformation'] = ResolversParentTypes['PageInformation']> = {
-  endCursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  length?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -399,7 +401,7 @@ export type PaginatedTransactionResolvers<ContextType = any, ParentType extends 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType, RequireFields<QueryAccountArgs, 'id'>>;
   accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType>;
-  budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
+  budget?: Resolver<Maybe<ResolversTypes['Budget']>, ParentType, ContextType>;
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoriesArgs, 'monthDate'>>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
   transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionArgs, 'id'>>;
@@ -416,7 +418,7 @@ export type TransactionResolvers<ContextType = any, ParentType extends Resolvers
   accountId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   categoryId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['TransactionStatusEnum'], ParentType, ContextType>;

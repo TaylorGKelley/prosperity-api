@@ -4,6 +4,7 @@ input CursorPaginationInput {
 }
 
 type PageInformation {
-  hasNextPage: Boolean
+  length: Int!
+  hasNextPage: Boolean!
   endCursor: String
 }
