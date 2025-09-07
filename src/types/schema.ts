@@ -45,6 +45,7 @@ export type Category = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   startDate: Scalars['DateTime']['output'];
+  totalSpent?: Maybe<Scalars['Float']['output']>;
 };
 
 export type CreateAccountInput = {
@@ -358,6 +359,7 @@ export type CategoryResolvers<ContextType = any, ParentType extends ResolversPar
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  totalSpent?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -1,4 +1,4 @@
-import { type UUID } from 'node:crypto';
+import crypto, { type UUID } from 'node:crypto';
 import {
 	type Category,
 	type QueryCategoriesArgs,
@@ -17,6 +17,7 @@ import {
 	userTable,
 } from '@/infrastructure/database/schema';
 import { lte } from 'drizzle-orm';
+import { Transactions } from './Transactions.useCase';
 
 export class Categories {
 	public static forUser(user: User | null) {
@@ -31,8 +32,21 @@ export class Categories {
 	}
 
 	public async getAll({ monthDate }: QueryCategoriesArgs): Promise<Category[]> {
-		const result = await db
-			.select(getTableColumns(categoryTable))
+		// First, get all transactions for the month
+		const transactions = await Transactions.forUser({
+			id: this._userId,
+		} as User).getAll({ monthDate: monthDate });
+
+		// Calculate totals per category
+		const totals = new Map<string, number>();
+		transactions.items.forEach((transaction) => {
+			const key = transaction.categoryId ?? 'other';
+			totals.set(key, (totals.get(key) ?? 0) + transaction.amount);
+		});
+
+		// Then get categories
+		const categories = await db
+			.select({ ...getTableColumns(categoryTable) })
 			.from(categoryTable)
 			.innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
 			.innerJoin(userTable, eq(userTable.budgetId, budgetTable.id))
@@ -64,7 +78,28 @@ export class Categories {
 						  )
 				)
 			)
-			.orderBy(asc(categoryTable.name));
+			.orderBy(asc(categoryTable.name))
+			.groupBy();
+
+		// Combine categories with totals
+		const result: Category[] = categories.map((category) => ({
+			...category,
+			totalSpent: totals.get(category.id) ?? 0,
+		}));
+
+		// Add "other" category if there are uncategorized transactions
+		const otherAmount = totals.get('other');
+		if (otherAmount) {
+			result.push({
+				id: crypto.randomUUID(),
+				name: 'Other',
+				amount: 0,
+				budgetId: categories[0]?.budgetId ?? '',
+				startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+				endDate: null,
+				totalSpent: otherAmount,
+			} as Category);
+		}
 
 		return result;
 	}
