@@ -1,50 +1,50 @@
 type Query {
-  transactions(
-    monthDate: DateTime!
-    pagination: CursorPaginationInput
-  ): PaginatedTransaction! @auth(permissions: ["default"])
-  transaction(id: ID!): Transaction! @auth(permissions: ["default"])
+	transactions(
+		monthDate: DateTime!
+		pagination: CursorPaginationInput
+	): PaginatedTransaction! @auth(permissions: ["default"])
+	transaction(id: ID!): Transaction! @auth(permissions: ["default"])
 }
 
 type Mutation {
-  syncTransactions: SyncTransactions! @auth(permissions: ["default"])
-  # createTransaction(input: CreateTransactionInput!): Transaction!
-  # 	@auth(permissions: ["default"])
-  # updateTransaction(input: UpdateTransactionInput!): Transaction!
-  # 	@auth(permissions: ["default"])
-  # deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
+	syncTransactions: SyncTransactions! @auth(permissions: ["default"])
+	# createTransaction(input: CreateTransactionInput!): Transaction!
+	# 	@auth(permissions: ["default"])
+	# updateTransaction(input: UpdateTransactionInput!): Transaction!
+	# 	@auth(permissions: ["default"])
+	deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
 }
 
 enum TransactionStatusEnum {
-  POSTED
-  PENDING
+	POSTED
+	PENDING
 }
 
 type PaginatedTransaction {
-  items: [Transaction!]!
-  pageInfo: PageInformation
+	items: [Transaction!]!
+	pageInfo: PageInformation
 }
 
 type Transaction {
-  id: ID!
-  tellerId: ID!
-  accountId: ID!
-  categoryId: ID
-  amount: Float!
-  date: DateTime!
-  description: String!
-  status: TransactionStatusEnum!
-  type: String!
+	id: ID!
+	tellerId: ID!
+	accountId: ID!
+	categoryId: ID
+	amount: Float!
+	date: DateTime!
+	description: String!
+	status: TransactionStatusEnum!
+	type: String!
 }
 
 enum SyncStatusEnum {
-  SUCCESS
-  ERROR
+	SUCCESS
+	ERROR
 }
 
 type SyncTransactions {
-  status: SyncStatusEnum!
-  error: String
+	status: SyncStatusEnum!
+	error: String
 }
 
 # input CreateTransactionInput {

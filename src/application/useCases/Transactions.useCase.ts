@@ -10,7 +10,7 @@ import {
 	// type MutationCreateTransactionArgs,
 	// type MutationUpdateTransactionArgs,
 	type Transaction,
-	// type MutationDeleteTransactionArgs,
+	type MutationDeleteTransactionArgs,
 	type PaginatedTransaction,
 	TransactionStatusEnum,
 	SyncTransactions,
@@ -23,6 +23,7 @@ import {
 	desc,
 	eq,
 	getTableColumns,
+	gt,
 	gte,
 	lt,
 	lte,
@@ -84,7 +85,7 @@ export class Transactions {
 						  ),
 					!monthDate
 						? undefined
-						: gte(
+						: gt(
 								transactionTable.date,
 								new Date(monthDate.getUTCFullYear(), monthDate.getUTCMonth(), 1)
 						  ),
@@ -230,8 +231,24 @@ export class Transactions {
 						);
 					}
 					if (transactions.length > 0)
-						await tw.insert(transactionTable).values(transactions);
+						await tw
+							.insert(transactionTable)
+							.values(transactions)
+							.onConflictDoUpdate({
+								target: transactionTable.tellerId,
+								set: {
+									// If there's a conflict on tellerId, update all fields except accountId and tellerId
+									categoryId: transactionTable.categoryId,
+									amount: transactionTable.amount,
+									date: transactionTable.date,
+									description: transactionTable.description,
+									status: transactionTable.status,
+									type: transactionTable.type,
+									metadata: transactionTable.metadata,
+								},
+							});
 				} catch (error) {
+					console.error(error);
 					await tw.rollback();
 				}
 			});
@@ -281,14 +298,14 @@ export class Transactions {
 	// 	return result;
 	// }
 
-	// public async delete({ id }: MutationDeleteTransactionArgs): Promise<UUID> {
-	// 	const result = (
-	// 		await db
-	// 			.delete(transactionTable)
-	// 			.where(and(eq(transactionTable.id, id)))
-	// 			.returning()
-	// 	)[0];
+	public async delete({ id }: MutationDeleteTransactionArgs): Promise<UUID> {
+		const result = (
+			await db
+				.delete(transactionTable)
+				.where(and(eq(transactionTable.id, id)))
+				.returning()
+		)[0];
 
-	// 	return result.id as UUID;
-	// }
+		return result.id as UUID;
+	}
 }

@@ -185,22 +185,30 @@ export class Accounts {
 	public async delete({
 		id,
 	}: MutationDeleteAccountArgs): Promise<Account['id']> {
-		const result = (
-			await db
-				.delete(accountTable)
-				.where(and(eq(accountTable.id, id)))
-				.returning()
-		)[0];
+		let result: typeof accountTable.$inferSelect;
 
-		if (!result) throw new Error('Account with that Id was not found');
+		await db.transaction(async (tx) => {
+			try {
+				result = (
+					await db
+						.delete(accountTable)
+						.where(eq(accountTable.id, id))
+						.returning()
+				)[0];
 
-		const accessToken = AccessToken.decrypt(
-			result.accessToken,
-			result.accessTokenIV
-		);
+				if (!result) throw new Error('Account with that Id was not found');
 
-		await new TellerClient(accessToken).deleteAccount(id);
+				const accessToken = AccessToken.decrypt(
+					result.accessToken,
+					result.accessTokenIV
+				);
 
-		return result.id;
+				await new TellerClient(accessToken).deleteAccount(id);
+			} catch (error) {
+				await tx.rollback();
+			}
+		});
+
+		return result!.id;
 	}
 }

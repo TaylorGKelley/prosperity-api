@@ -34,9 +34,9 @@ const transactionResolver: Resolvers<ContextType> = {
 		// updateTransaction: async (_parent, { input }, { req }, _info) => {
 		// 	return Transactions.forUser(req.user).update({ input });
 		// },
-		// deleteTransaction: async (_parent, { id }, { req }, _info) => {
-		// 	return Transactions.forUser(req.user).delete({ id });
-		// },
+		deleteTransaction: async (_parent, { id }, { req }, _info) => {
+			return Transactions.forUser(req.user).delete({ id });
+		},
 	},
 };
 

@@ -75,6 +75,7 @@ export type Mutation = {
   createCategory: Category;
   deleteAccount?: Maybe<Scalars['ID']['output']>;
   deleteCategory: Scalars['ID']['output'];
+  deleteTransaction: Scalars['ID']['output'];
   syncTransactions: SyncTransactions;
   updateCategory: Category;
 };
@@ -96,6 +97,11 @@ export type MutationDeleteAccountArgs = {
 
 
 export type MutationDeleteCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteTransactionArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -383,6 +389,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
   deleteAccount?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationDeleteAccountArgs, 'id'>>;
   deleteCategory?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
+  deleteTransaction?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteTransactionArgs, 'id'>>;
   syncTransactions?: Resolver<ResolversTypes['SyncTransactions'], ParentType, ContextType>;
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
 };
