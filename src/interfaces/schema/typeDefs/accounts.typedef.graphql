@@ -11,7 +11,7 @@ type Mutation {
 
 type Account {
   id: ID!
-  budgetId: ID!
+  budget: Budget!
   currency: String!
   enrollmentId: String!
   institution: Institution!

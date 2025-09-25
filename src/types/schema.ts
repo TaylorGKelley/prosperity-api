@@ -20,7 +20,7 @@ export type Scalars = {
 
 export type Account = {
   __typename?: 'Account';
-  budgetId: Scalars['ID']['output'];
+  budget: Budget;
   currency: Scalars['String']['output'];
   enrollmentId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -238,9 +238,9 @@ export type SyncTransactions = {
 
 export type Transaction = {
   __typename?: 'Transaction';
-  accountId: Scalars['ID']['output'];
+  account: Account;
   amount: Scalars['Float']['output'];
-  categoryId?: Maybe<Scalars['ID']['output']>;
+  category?: Maybe<Category>;
   date: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -404,7 +404,7 @@ export type ResolversParentTypes = {
 };
 
 export type AccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = {
-  budgetId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   enrollmentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -505,9 +505,9 @@ export type SyncTransactionsResolvers<ContextType = any, ParentType extends Reso
 };
 
 export type TransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']> = {
-  accountId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  account?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  categoryId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  category?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType>;
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

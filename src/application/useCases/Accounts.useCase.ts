@@ -28,13 +28,17 @@ export class Accounts {
   }
 
   private _userId: UUID;
+  private readonly _accountColumns = {
+    ...getTableColumns(accountTable),
+    budget: { ...getTableColumns(budgetTable) },
+  };
   public constructor(userId: UUID) {
     this._userId = userId;
   }
 
   public async getAll(): Promise<Account[]> {
     const accountRecords = await db
-      .select(getTableColumns(accountTable))
+      .select(this._accountColumns)
       .from(accountTable)
       .innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
       .innerJoin(userBudgetTable, eq(userBudgetTable.budgetId, budgetTable.id))
@@ -53,7 +57,7 @@ export class Accounts {
 
       result.push({
         id: accountRecord.id,
-        budgetId: accountRecord.budgetId,
+        budget: accountRecord.budget,
         currency: accountInfo.currency,
         enrollmentId: accountInfo.enrollment_id,
         institution: accountInfo.institution,
@@ -78,7 +82,7 @@ export class Accounts {
   public async get({ id }: QueryAccountArgs): Promise<Account> {
     const result = (
       await db
-        .select(getTableColumns(accountTable))
+        .select(this._accountColumns)
         .from(accountTable)
         .innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
         .innerJoin(
@@ -101,7 +105,7 @@ export class Accounts {
 
     return {
       id: result.id,
-      budgetId: result.budgetId,
+      budget: result.budget,
       currency: accountInfo.currency,
       enrollmentId: accountInfo.enrollment_id,
       institution: accountInfo.institution,
@@ -127,15 +131,16 @@ export class Accounts {
     const { iv: accessTokenIV, encryptedToken: accessToken } =
       AccessToken.encrypt(input.accessToken);
 
-    const user = (
+    const budget = (
       await db
-        .select({ budgetId: userBudgetTable.budgetId })
-        .from(userBudgetTable)
+        .select(getTableColumns(budgetTable))
+        .from(budgetTable)
+        .innerJoin(
+          userBudgetTable,
+          eq(userBudgetTable.budgetId, budgetTable.id)
+        )
         .where(eq(userBudgetTable.userId, this._userId))
     )[0];
-
-    if (!user?.budgetId)
-      throw new Error('Please create a budget before linking accounts');
 
     const accounts = await new TellerClient(input.accessToken).getAccounts();
 
@@ -144,7 +149,7 @@ export class Accounts {
         .insert(accountTable)
         .values(
           accounts.map((account) => ({
-            budgetId: user.budgetId!,
+            budgetId: budget.id,
             tellerId: account.id,
             accessToken,
             accessTokenIV,
@@ -152,7 +157,6 @@ export class Accounts {
         )
         .returning({
           id: accountTable.id,
-          budgetId: accountTable.budgetId,
           tellerId: accountTable.tellerId,
         });
 
@@ -163,7 +167,7 @@ export class Accounts {
 
         return {
           id: result.id,
-          budgetId: result.budgetId,
+          budget: budget,
           currency: accountInfo.currency,
           enrollmentId: accountInfo.enrollment_id,
           institution: accountInfo.institution,

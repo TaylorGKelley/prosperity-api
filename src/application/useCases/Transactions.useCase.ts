@@ -1,6 +1,8 @@
 import { db } from '@/infrastructure/database';
 import {
   accountTable,
+  budgetTable,
+  categoryTable,
   transactionTable,
   userBudgetTable,
 } from '@/infrastructure/database/schema';
@@ -15,6 +17,9 @@ import {
   TransactionStatusEnum,
   SyncTransactions,
   SyncStatusEnum,
+  TypeEnum,
+  SubtypeEnum,
+  StatusEnum,
 } from '@/types/schema';
 import { User } from '@/types/User';
 import {
@@ -42,6 +47,15 @@ export class Transactions {
   }
 
   private _userId: UUID;
+  private readonly _transactionColumns = {
+    ...getTableColumns(transactionTable),
+    account: {
+      ...getTableColumns(accountTable),
+    },
+    category: {
+      ...getTableColumns(categoryTable),
+    },
+  };
   public constructor(userId: UUID) {
     this._userId = userId;
   }
@@ -65,9 +79,16 @@ export class Transactions {
 
     // Query the database
     const query = db
-      .select(getTableColumns(transactionTable))
+      .select({
+        ...this._transactionColumns,
+        budgetId: userBudgetTable.budgetId,
+      })
       .from(transactionTable)
       .innerJoin(accountTable, eq(accountTable.id, transactionTable.accountId))
+      .leftJoin(
+        categoryTable,
+        eq(categoryTable.id, transactionTable.categoryId)
+      )
       .innerJoin(
         userBudgetTable,
         eq(userBudgetTable.budgetId, accountTable.budgetId)
@@ -116,17 +137,50 @@ export class Transactions {
         : undefined;
 
     return {
-      items: items.map((item) => {
-        return {
-          ...item,
-          status:
-            TransactionStatusEnum[
-              snakeToPascalCase(
-                item.status
-              ) as keyof typeof TransactionStatusEnum
-            ],
-        };
-      }),
+      items: await Promise.all(
+        items.map(async (item) => {
+          const accountInfo = await new TellerClient(
+            AccessToken.decrypt(
+              item.account.accessToken,
+              item.account.accessTokenIV
+            )
+          ).getAccount(item.account.tellerId);
+
+          return {
+            ...item,
+            account: {
+              id: item.id,
+              budget: { id: item.budgetId },
+              currency: accountInfo.currency,
+              enrollmentId: accountInfo.enrollment_id,
+              institution: accountInfo.institution,
+              lastFour: parseInt(accountInfo.last_four),
+              name: accountInfo.name,
+              type: TypeEnum[
+                snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+              ],
+              subtype:
+                SubtypeEnum[
+                  snakeToPascalCase(
+                    accountInfo.subtype
+                  ) as keyof typeof SubtypeEnum
+                ],
+              status:
+                StatusEnum[
+                  snakeToPascalCase(
+                    accountInfo.status
+                  ) as keyof typeof StatusEnum
+                ],
+            },
+            status:
+              TransactionStatusEnum[
+                snakeToPascalCase(
+                  item.status
+                ) as keyof typeof TransactionStatusEnum
+              ],
+          };
+        })
+      ),
       pageInfo: pagination && {
         length: items.length,
         hasNextPage: hasNextPage!,
@@ -140,11 +194,18 @@ export class Transactions {
   }: QueryTransactionArgs): Promise<Transaction | undefined> {
     const result = (
       await db
-        .select(getTableColumns(transactionTable))
+        .select({
+          ...this._transactionColumns,
+          budgetId: userBudgetTable.budgetId,
+        })
         .from(transactionTable)
         .innerJoin(
           accountTable,
           eq(accountTable.id, transactionTable.accountId)
+        )
+        .leftJoin(
+          categoryTable,
+          eq(categoryTable.id, transactionTable.categoryId)
         )
         .innerJoin(
           userBudgetTable,
@@ -158,8 +219,35 @@ export class Transactions {
         )
     )?.[0];
 
+    const accountInfo = await new TellerClient(
+      AccessToken.decrypt(
+        result.account.accessToken,
+        result.account.accessTokenIV
+      )
+    ).getAccount(result.account.tellerId);
+
     return {
       ...result,
+      account: {
+        id: result.id,
+        budget: { id: result.budgetId },
+        currency: accountInfo.currency,
+        enrollmentId: accountInfo.enrollment_id,
+        institution: accountInfo.institution,
+        lastFour: parseInt(accountInfo.last_four),
+        name: accountInfo.name,
+        type: TypeEnum[
+          snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+        ],
+        subtype:
+          SubtypeEnum[
+            snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+          ],
+        status:
+          StatusEnum[
+            snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+          ],
+      },
       status:
         TransactionStatusEnum[
           snakeToPascalCase(result.status) as keyof typeof TransactionStatusEnum

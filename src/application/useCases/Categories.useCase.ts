@@ -40,8 +40,8 @@ export class Categories {
     // Calculate totals per category
     const totals = new Map<string, number>();
     transactions.items.forEach((transaction) => {
-      const key = transaction.categoryId ?? 'other';
-      totals.set(key, (totals.get(key) ?? 0) + transaction.amount);
+      const key = transaction.category?.id || 'other';
+      totals.set(key, (totals.get(key) || 0) + transaction.amount);
     });
 
     // Then get categories
