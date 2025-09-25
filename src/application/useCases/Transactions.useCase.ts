@@ -24,7 +24,6 @@ import {
 	eq,
 	getTableColumns,
 	gt,
-	gte,
 	lt,
 	lte,
 	or,

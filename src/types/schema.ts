@@ -57,6 +57,14 @@ export type CreateCategoryInput = {
   name: Scalars['String']['input'];
 };
 
+export type CreateSavingGoalInput = {
+  budgetId: Scalars['ID']['input'];
+  contributionAmount: Scalars['Float']['input'];
+  prioritized: Scalars['Boolean']['input'];
+  targetAmount: Scalars['Float']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type CursorPaginationInput = {
   count: Scalars['Int']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
@@ -73,11 +81,14 @@ export type Mutation = {
   createAccount: Array<Account>;
   createBudget: Budget;
   createCategory: Category;
+  createSavingGoal: SavingGoal;
   deleteAccount?: Maybe<Scalars['ID']['output']>;
   deleteCategory: Scalars['ID']['output'];
+  deleteSavingGoal: Scalars['ID']['output'];
   deleteTransaction: Scalars['ID']['output'];
   syncTransactions: SyncTransactions;
   updateCategory: Category;
+  updateSavingGoal: SavingGoal;
 };
 
 
@@ -91,12 +102,22 @@ export type MutationCreateCategoryArgs = {
 };
 
 
+export type MutationCreateSavingGoalArgs = {
+  input: CreateSavingGoalInput;
+};
+
+
 export type MutationDeleteAccountArgs = {
   id: Scalars['ID']['input'];
 };
 
 
 export type MutationDeleteCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteSavingGoalArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -108,6 +129,11 @@ export type MutationDeleteTransactionArgs = {
 
 export type MutationUpdateCategoryArgs = {
   input: UpdateCategoryInput;
+};
+
+
+export type MutationUpdateSavingGoalArgs = {
+  input: UpdateSavingGoalInput;
 };
 
 export type PageInformation = {
@@ -130,6 +156,8 @@ export type Query = {
   budget?: Maybe<Budget>;
   categories: Array<Category>;
   category: Category;
+  savingGoal?: Maybe<SavingGoal>;
+  savingGoals: Array<SavingGoal>;
   transaction: Transaction;
   transactions: PaginatedTransaction;
 };
@@ -150,6 +178,16 @@ export type QueryCategoryArgs = {
 };
 
 
+export type QuerySavingGoalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySavingGoalsArgs = {
+  budgetId: Scalars['ID']['input'];
+};
+
+
 export type QueryTransactionArgs = {
   id: Scalars['ID']['input'];
 };
@@ -158,6 +196,18 @@ export type QueryTransactionArgs = {
 export type QueryTransactionsArgs = {
   monthDate: Scalars['DateTime']['input'];
   pagination?: InputMaybe<CursorPaginationInput>;
+};
+
+export type SavingGoal = {
+  __typename?: 'SavingGoal';
+  budget: Budget;
+  contributionAmount: Scalars['Float']['output'];
+  currentAmount: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  lastContribution: Scalars['DateTime']['output'];
+  prioritized: Scalars['Boolean']['output'];
+  targetAmount: Scalars['Float']['output'];
+  title: Scalars['String']['output'];
 };
 
 export enum StatusEnum {
@@ -213,6 +263,14 @@ export type UpdateCategoryInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSavingGoalInput = {
+  contributionAmount?: InputMaybe<Scalars['Float']['input']>;
+  id: Scalars['ID']['input'];
+  prioritized?: InputMaybe<Scalars['Boolean']['input']>;
+  targetAmount?: InputMaybe<Scalars['Float']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -292,6 +350,7 @@ export type ResolversTypes = {
   Category: ResolverTypeWrapper<Category>;
   CreateAccountInput: CreateAccountInput;
   CreateCategoryInput: CreateCategoryInput;
+  CreateSavingGoalInput: CreateSavingGoalInput;
   CursorPaginationInput: CursorPaginationInput;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
@@ -303,6 +362,7 @@ export type ResolversTypes = {
   PageInformation: ResolverTypeWrapper<PageInformation>;
   PaginatedTransaction: ResolverTypeWrapper<PaginatedTransaction>;
   Query: ResolverTypeWrapper<{}>;
+  SavingGoal: ResolverTypeWrapper<SavingGoal>;
   StatusEnum: StatusEnum;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   SubtypeEnum: SubtypeEnum;
@@ -312,6 +372,7 @@ export type ResolversTypes = {
   TransactionStatusEnum: TransactionStatusEnum;
   TypeEnum: TypeEnum;
   UpdateCategoryInput: UpdateCategoryInput;
+  UpdateSavingGoalInput: UpdateSavingGoalInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -322,6 +383,7 @@ export type ResolversParentTypes = {
   Category: Category;
   CreateAccountInput: CreateAccountInput;
   CreateCategoryInput: CreateCategoryInput;
+  CreateSavingGoalInput: CreateSavingGoalInput;
   CursorPaginationInput: CursorPaginationInput;
   Date: Scalars['Date']['output'];
   DateTime: Scalars['DateTime']['output'];
@@ -333,10 +395,12 @@ export type ResolversParentTypes = {
   PageInformation: PageInformation;
   PaginatedTransaction: PaginatedTransaction;
   Query: {};
+  SavingGoal: SavingGoal;
   String: Scalars['String']['output'];
   SyncTransactions: SyncTransactions;
   Transaction: Transaction;
   UpdateCategoryInput: UpdateCategoryInput;
+  UpdateSavingGoalInput: UpdateSavingGoalInput;
 };
 
 export type AccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = {
@@ -387,11 +451,14 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createAccount?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'input'>>;
   createBudget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
+  createSavingGoal?: Resolver<ResolversTypes['SavingGoal'], ParentType, ContextType, RequireFields<MutationCreateSavingGoalArgs, 'input'>>;
   deleteAccount?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationDeleteAccountArgs, 'id'>>;
   deleteCategory?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
+  deleteSavingGoal?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteSavingGoalArgs, 'id'>>;
   deleteTransaction?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteTransactionArgs, 'id'>>;
   syncTransactions?: Resolver<ResolversTypes['SyncTransactions'], ParentType, ContextType>;
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
+  updateSavingGoal?: Resolver<ResolversTypes['SavingGoal'], ParentType, ContextType, RequireFields<MutationUpdateSavingGoalArgs, 'input'>>;
 };
 
 export type PageInformationResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInformation'] = ResolversParentTypes['PageInformation']> = {
@@ -413,8 +480,22 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   budget?: Resolver<Maybe<ResolversTypes['Budget']>, ParentType, ContextType>;
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoriesArgs, 'monthDate'>>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
+  savingGoal?: Resolver<Maybe<ResolversTypes['SavingGoal']>, ParentType, ContextType, RequireFields<QuerySavingGoalArgs, 'id'>>;
+  savingGoals?: Resolver<Array<ResolversTypes['SavingGoal']>, ParentType, ContextType, RequireFields<QuerySavingGoalsArgs, 'budgetId'>>;
   transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionArgs, 'id'>>;
   transactions?: Resolver<ResolversTypes['PaginatedTransaction'], ParentType, ContextType, RequireFields<QueryTransactionsArgs, 'monthDate'>>;
+};
+
+export type SavingGoalResolvers<ContextType = any, ParentType extends ResolversParentTypes['SavingGoal'] = ResolversParentTypes['SavingGoal']> = {
+  budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
+  contributionAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lastContribution?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  prioritized?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  targetAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SyncTransactionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SyncTransactions'] = ResolversParentTypes['SyncTransactions']> = {
@@ -447,6 +528,7 @@ export type Resolvers<ContextType = any> = {
   PageInformation?: PageInformationResolvers<ContextType>;
   PaginatedTransaction?: PaginatedTransactionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SavingGoal?: SavingGoalResolvers<ContextType>;
   SyncTransactions?: SyncTransactionsResolvers<ContextType>;
   Transaction?: TransactionResolvers<ContextType>;
 };
