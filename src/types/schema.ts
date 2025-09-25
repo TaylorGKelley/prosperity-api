@@ -60,7 +60,7 @@ export type CreateCategoryInput = {
 export type CreateSavingGoalInput = {
   budgetId: Scalars['ID']['input'];
   contributionAmount: Scalars['Float']['input'];
-  prioritized: Scalars['Boolean']['input'];
+  prioritize: Scalars['Boolean']['input'];
   targetAmount: Scalars['Float']['input'];
   title: Scalars['String']['input'];
 };
@@ -205,7 +205,7 @@ export type SavingGoal = {
   currentAmount: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   lastContribution: Scalars['DateTime']['output'];
-  prioritized: Scalars['Boolean']['output'];
+  prioritize: Scalars['Boolean']['output'];
   targetAmount: Scalars['Float']['output'];
   title: Scalars['String']['output'];
 };
@@ -268,7 +268,7 @@ export type UpdateCategoryInput = {
 export type UpdateSavingGoalInput = {
   contributionAmount?: InputMaybe<Scalars['Float']['input']>;
   id: Scalars['ID']['input'];
-  prioritized?: InputMaybe<Scalars['Boolean']['input']>;
+  prioritize?: InputMaybe<Scalars['Boolean']['input']>;
   targetAmount?: InputMaybe<Scalars['Float']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -492,7 +492,7 @@ export type SavingGoalResolvers<ContextType = any, ParentType extends ResolversP
   currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastContribution?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  prioritized?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  prioritize?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   targetAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

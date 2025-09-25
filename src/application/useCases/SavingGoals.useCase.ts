@@ -1,83 +1,110 @@
 import { db } from '@/infrastructure/database';
+import { budgetTable } from '@/infrastructure/database/schema';
 import { savingGoalTable } from '@/infrastructure/database/schema/savingGoal.schema';
 import {
-	type QuerySavingGoalArgs,
-	type QuerySavingGoalsArgs,
-	type MutationCreateSavingGoalArgs,
-	MutationUpdateSavingGoalArgs,
-	MutationDeleteSavingGoalArgs,
-	SavingGoal,
+  type QuerySavingGoalArgs,
+  type QuerySavingGoalsArgs,
+  type MutationCreateSavingGoalArgs,
+  MutationUpdateSavingGoalArgs,
+  MutationDeleteSavingGoalArgs,
+  SavingGoal,
 } from '@/types/schema';
 import { type User } from '@/types/User';
-import { eq } from 'drizzle-orm';
+import { eq, getTableColumns } from 'drizzle-orm';
 import { type UUID } from 'node:crypto';
 
 export class SavingGoals {
-	public static forUser(user: User | null) {
-		if (user === null) throw new Error('Unauthorized');
+  public static forUser(user: User | null) {
+    if (user === null) throw new Error('Unauthorized');
 
-		return new SavingGoals(user.id);
-	}
+    return new SavingGoals(user.id);
+  }
 
-	private _userId: UUID;
-	public constructor(userId: UUID) {
-		this._userId = userId;
-	}
+  private _userId: UUID;
+  private readonly savingGoalColumns = {
+    ...getTableColumns(savingGoalTable),
+    budget: { ...getTableColumns(budgetTable) },
+  };
+  public constructor(userId: UUID) {
+    this._userId = userId;
+  }
 
-	public async getAll({
-		budgetId,
-	}: QuerySavingGoalsArgs): Promise<SavingGoal[]> {
-		return await db
-			.select()
-			.from(savingGoalTable)
-			.where(eq(savingGoalTable.budgetId, budgetId));
-	}
+  public async getAll({
+    budgetId,
+  }: QuerySavingGoalsArgs): Promise<SavingGoal[]> {
+    const result = await db
+      .select(this.savingGoalColumns)
+      .from(savingGoalTable)
+      .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
+      .where(eq(savingGoalTable.budgetId, budgetId));
 
-	public async get({
-		id,
-	}: QuerySavingGoalArgs): Promise<SavingGoal | undefined> {
-		return (
-			await db.select().from(savingGoalTable).where(eq(savingGoalTable.id, id))
-		)[0];
-	}
+    return result;
+  }
 
-	public async create({
-		input,
-	}: MutationCreateSavingGoalArgs): Promise<SavingGoal> {
-		const result = (
-			await db.insert(savingGoalTable).values(input).returning()
-		)[0];
+  public async get({
+    id,
+  }: QuerySavingGoalArgs): Promise<SavingGoal | undefined> {
+    return (
+      await db
+        .select(this.savingGoalColumns)
+        .from(savingGoalTable)
+        .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
+        .where(eq(savingGoalTable.id, id))
+    )[0];
+  }
 
-		return result;
-	}
+  public async create({
+    input,
+  }: MutationCreateSavingGoalArgs): Promise<SavingGoal> {
+    const result = (
+      await db
+        .insert(savingGoalTable)
+        .values(input)
+        .returning({ id: savingGoalTable.id })
+    )[0];
 
-	public async update({
-		input,
-	}: MutationUpdateSavingGoalArgs): Promise<SavingGoal> {
-		const result = (
-			await db
-				.update(savingGoalTable)
-				.set({
-					title: input.title || undefined,
-					contributionAmount: input.contributionAmount || undefined,
-					targetAmount: input.targetAmount || undefined,
-					prioritize: input.prioritized || undefined,
-				})
-				.where(eq(savingGoalTable.id, input.id))
-				.returning()
-		)[0];
+    return (
+      await db
+        .select(this.savingGoalColumns)
+        .from(savingGoalTable)
+        .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
+        .where(eq(savingGoalTable.id, result.id))
+    )[0] as SavingGoal;
+  }
 
-		return result as SavingGoal;
-	}
+  public async update({
+    input,
+  }: MutationUpdateSavingGoalArgs): Promise<SavingGoal> {
+    const result = (
+      await db
+        .update(savingGoalTable)
+        .set({
+          title: input.title || undefined,
+          contributionAmount: input.contributionAmount || undefined,
+          targetAmount: input.targetAmount || undefined,
+          prioritize: input.prioritize || undefined,
+        })
+        .where(eq(savingGoalTable.id, input.id))
+        .returning({ id: savingGoalTable.id })
+    )[0];
 
-	public async delete({ id }: MutationDeleteSavingGoalArgs): Promise<UUID> {
-		const result = (
-			await db
-				.delete(savingGoalTable)
-				.where(eq(savingGoalTable.id, id))
-				.returning({ id: savingGoalTable.id })
-		)[0];
+    return (
+      await db
+        .select(this.savingGoalColumns)
+        .from(savingGoalTable)
+        .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
+        .where(eq(savingGoalTable.id, result.id))
+    )[0] as SavingGoal;
+  }
 
-		return result.id as UUID;
-	}
+  public async delete({ id }: MutationDeleteSavingGoalArgs): Promise<UUID> {
+    const result = (
+      await db
+        .delete(savingGoalTable)
+        .where(eq(savingGoalTable.id, id))
+        .returning({ id: savingGoalTable.id })
+    )[0];
+
+    return result.id as UUID;
+  }
 }

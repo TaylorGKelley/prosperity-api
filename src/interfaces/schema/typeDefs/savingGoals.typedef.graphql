@@ -1,37 +1,37 @@
 type Query {
-	savingGoals(budgetId: ID!): [SavingGoal!]!
-	savingGoal(id: ID!): SavingGoal
+  savingGoals(budgetId: ID!): [SavingGoal!]!
+  savingGoal(id: ID!): SavingGoal
 }
 
 type Mutation {
-	createSavingGoal(input: CreateSavingGoalInput!): SavingGoal!
-	updateSavingGoal(input: UpdateSavingGoalInput!): SavingGoal!
-	deleteSavingGoal(id: ID!): ID!
+  createSavingGoal(input: CreateSavingGoalInput!): SavingGoal!
+  updateSavingGoal(input: UpdateSavingGoalInput!): SavingGoal!
+  deleteSavingGoal(id: ID!): ID!
 }
 
 type SavingGoal {
-	id: ID!
-	budget: Budget!
-	title: String!
-	targetAmount: Float!
-	currentAmount: Float!
-	contributionAmount: Float!
-	lastContribution: DateTime!
-	prioritized: Boolean!
+  id: ID!
+  budget: Budget!
+  title: String!
+  targetAmount: Float!
+  currentAmount: Float!
+  contributionAmount: Float!
+  lastContribution: DateTime!
+  prioritize: Boolean!
 }
 
 input CreateSavingGoalInput {
-	budgetId: ID!
-	title: String!
-	targetAmount: Float!
-	contributionAmount: Float!
-	prioritized: Boolean!
+  budgetId: ID!
+  title: String!
+  targetAmount: Float!
+  contributionAmount: Float!
+  prioritize: Boolean!
 }
 
 input UpdateSavingGoalInput {
-	id: ID!
-	title: String
-	targetAmount: Float
-	contributionAmount: Float
-	prioritized: Boolean
+  id: ID!
+  title: String
+  targetAmount: Float
+  contributionAmount: Float
+  prioritize: Boolean
 }
