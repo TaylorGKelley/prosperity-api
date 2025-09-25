@@ -35,25 +35,33 @@ export type Account = {
 export type Budget = {
   __typename?: 'Budget';
   id: Scalars['ID']['output'];
+  isDefault: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Category = {
   __typename?: 'Category';
   amount: Scalars['Float']['output'];
-  budgetId: Scalars['ID']['output'];
+  budget: Budget;
   endDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   startDate: Scalars['DateTime']['output'];
-  totalSpent?: Maybe<Scalars['Float']['output']>;
+  totalSpent: Scalars['Float']['output'];
 };
 
 export type CreateAccountInput = {
   accessToken: Scalars['String']['input'];
 };
 
+export type CreateBudgetInput = {
+  isDefault: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type CreateCategoryInput = {
   amount: Scalars['Float']['input'];
+  budgetId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
 };
 
@@ -83,10 +91,12 @@ export type Mutation = {
   createCategory: Category;
   createSavingGoal: SavingGoal;
   deleteAccount?: Maybe<Scalars['ID']['output']>;
+  deleteBudget?: Maybe<Scalars['ID']['output']>;
   deleteCategory: Scalars['ID']['output'];
   deleteSavingGoal: Scalars['ID']['output'];
   deleteTransaction: Scalars['ID']['output'];
   syncTransactions: SyncTransactions;
+  updateBudget: Budget;
   updateCategory: Category;
   updateSavingGoal: SavingGoal;
 };
@@ -94,6 +104,11 @@ export type Mutation = {
 
 export type MutationCreateAccountArgs = {
   input: CreateAccountInput;
+};
+
+
+export type MutationCreateBudgetArgs = {
+  input?: InputMaybe<CreateBudgetInput>;
 };
 
 
@@ -112,6 +127,11 @@ export type MutationDeleteAccountArgs = {
 };
 
 
+export type MutationDeleteBudgetArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteCategoryArgs = {
   id: Scalars['ID']['input'];
 };
@@ -124,6 +144,11 @@ export type MutationDeleteSavingGoalArgs = {
 
 export type MutationDeleteTransactionArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateBudgetArgs = {
+  input?: InputMaybe<UpdateBudgetInput>;
 };
 
 
@@ -153,7 +178,8 @@ export type Query = {
   __typename?: 'Query';
   account: Account;
   accounts: Array<Account>;
-  budget?: Maybe<Budget>;
+  budget: Budget;
+  budgets: Array<Budget>;
   categories: Array<Category>;
   category: Category;
   savingGoal?: Maybe<SavingGoal>;
@@ -165,6 +191,11 @@ export type Query = {
 
 export type QueryAccountArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryBudgetArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -259,6 +290,11 @@ export enum TypeEnum {
   Depository = 'DEPOSITORY'
 }
 
+export type UpdateBudgetInput = {
+  isDefault: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type UpdateCategoryInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
   id: Scalars['ID']['input'];
@@ -349,6 +385,7 @@ export type ResolversTypes = {
   Budget: ResolverTypeWrapper<Budget>;
   Category: ResolverTypeWrapper<Category>;
   CreateAccountInput: CreateAccountInput;
+  CreateBudgetInput: CreateBudgetInput;
   CreateCategoryInput: CreateCategoryInput;
   CreateSavingGoalInput: CreateSavingGoalInput;
   CursorPaginationInput: CursorPaginationInput;
@@ -371,6 +408,7 @@ export type ResolversTypes = {
   Transaction: ResolverTypeWrapper<Transaction>;
   TransactionStatusEnum: TransactionStatusEnum;
   TypeEnum: TypeEnum;
+  UpdateBudgetInput: UpdateBudgetInput;
   UpdateCategoryInput: UpdateCategoryInput;
   UpdateSavingGoalInput: UpdateSavingGoalInput;
 };
@@ -382,6 +420,7 @@ export type ResolversParentTypes = {
   Budget: Budget;
   Category: Category;
   CreateAccountInput: CreateAccountInput;
+  CreateBudgetInput: CreateBudgetInput;
   CreateCategoryInput: CreateCategoryInput;
   CreateSavingGoalInput: CreateSavingGoalInput;
   CursorPaginationInput: CursorPaginationInput;
@@ -399,6 +438,7 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   SyncTransactions: SyncTransactions;
   Transaction: Transaction;
+  UpdateBudgetInput: UpdateBudgetInput;
   UpdateCategoryInput: UpdateCategoryInput;
   UpdateSavingGoalInput: UpdateSavingGoalInput;
 };
@@ -419,17 +459,19 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type BudgetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Budget'] = ResolversParentTypes['Budget']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isDefault?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  budgetId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  totalSpent?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  totalSpent?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -449,14 +491,16 @@ export type InstitutionResolvers<ContextType = any, ParentType extends Resolvers
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createAccount?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'input'>>;
-  createBudget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
+  createBudget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType, Partial<MutationCreateBudgetArgs>>;
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
   createSavingGoal?: Resolver<ResolversTypes['SavingGoal'], ParentType, ContextType, RequireFields<MutationCreateSavingGoalArgs, 'input'>>;
   deleteAccount?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationDeleteAccountArgs, 'id'>>;
+  deleteBudget?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationDeleteBudgetArgs, 'id'>>;
   deleteCategory?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
   deleteSavingGoal?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteSavingGoalArgs, 'id'>>;
   deleteTransaction?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteTransactionArgs, 'id'>>;
   syncTransactions?: Resolver<ResolversTypes['SyncTransactions'], ParentType, ContextType>;
+  updateBudget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType, Partial<MutationUpdateBudgetArgs>>;
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
   updateSavingGoal?: Resolver<ResolversTypes['SavingGoal'], ParentType, ContextType, RequireFields<MutationUpdateSavingGoalArgs, 'input'>>;
 };
@@ -477,7 +521,8 @@ export type PaginatedTransactionResolvers<ContextType = any, ParentType extends 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType, RequireFields<QueryAccountArgs, 'id'>>;
   accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType>;
-  budget?: Resolver<Maybe<ResolversTypes['Budget']>, ParentType, ContextType>;
+  budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType, RequireFields<QueryBudgetArgs, 'id'>>;
+  budgets?: Resolver<Array<ResolversTypes['Budget']>, ParentType, ContextType>;
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoriesArgs, 'monthDate'>>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
   savingGoal?: Resolver<Maybe<ResolversTypes['SavingGoal']>, ParentType, ContextType, RequireFields<QuerySavingGoalArgs, 'id'>>;

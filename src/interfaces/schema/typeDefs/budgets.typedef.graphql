@@ -1,11 +1,28 @@
 type Query {
-  budget: Budget @auth(permissions: ["default"])
+  budgets: [Budget!]! @auth(permissions: ["default"])
+  budget(id: ID!): Budget! @auth(permissions: ["default"])
 }
 
 type Mutation {
-  createBudget: Budget! @auth(permissions: ["default"])
+  createBudget(input: CreateBudgetInput): Budget!
+    @auth(permissions: ["default"])
+  updateBudget(input: UpdateBudgetInput): Budget!
+    @auth(permissions: ["default"])
+  deleteBudget(id: ID!): ID @auth(permissions: ["default"])
 }
 
 type Budget {
   id: ID!
+  name: String!
+  isDefault: Boolean!
+}
+
+input CreateBudgetInput {
+  name: String!
+  isDefault: Boolean!
+}
+
+input UpdateBudgetInput {
+  name: String!
+  isDefault: Boolean!
 }

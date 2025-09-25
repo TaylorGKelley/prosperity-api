@@ -27,6 +27,10 @@ export class Categories {
   }
 
   private _userId: UUID;
+  private readonly _categoryColumns = {
+    ...getTableColumns(categoryTable),
+    budget: { ...getTableColumns(budgetTable) },
+  };
   public constructor(userId: UUID) {
     this._userId = userId;
   }
@@ -94,7 +98,10 @@ export class Categories {
         id: crypto.randomUUID(),
         name: 'Other',
         amount: 0,
-        budgetId: categories[0]?.budgetId ?? '',
+        budget: {
+          id: '',
+          isDefault: false,
+        },
         startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         endDate: null,
         totalSpent: otherAmount,
@@ -107,7 +114,7 @@ export class Categories {
   public async get({ id }: QueryCategoryArgs): Promise<Category | undefined> {
     const result = (
       await db
-        .select(getTableColumns(categoryTable))
+        .select(this._categoryColumns)
         .from(categoryTable)
         .innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
         .innerJoin(
@@ -120,33 +127,20 @@ export class Categories {
             eq(categoryTable.id, id)
           )
         )
-    )?.[0];
+    )[0];
 
-    return result as Category;
+    return result;
   }
 
   public async create({
     input,
   }: MutationCreateCategoryArgs): Promise<Category> {
-    // Get the user's budget
-    const budget = (
-      await db
-        .select(getTableColumns(budgetTable))
-        .from(budgetTable)
-        .innerJoin(
-          userBudgetTable,
-          eq(userBudgetTable.budgetId, budgetTable.id)
-        )
-        .where(eq(userBudgetTable.userId, this._userId))
-    )[0];
-
     const result = (
       await db
         .insert(categoryTable)
         .values({
           ...input,
-          budgetId: budget.id,
-          // starDate: new Date(), // Defaults to now
+          startDate: new Date(),
         })
         .returning()
     )[0] as Category;

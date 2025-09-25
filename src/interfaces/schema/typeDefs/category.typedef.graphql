@@ -1,33 +1,34 @@
 type Query {
-	categories(monthDate: DateTime!): [Category!]! @auth(permissions: ["default"])
-	category(id: ID!): Category! @auth(permissions: ["default"])
+  categories(monthDate: DateTime!): [Category!]! @auth(permissions: ["default"])
+  category(id: ID!): Category! @auth(permissions: ["default"])
 }
 
 type Mutation {
-	createCategory(input: CreateCategoryInput!): Category!
-		@auth(permissions: ["default"])
-	updateCategory(input: UpdateCategoryInput!): Category!
-		@auth(permissions: ["default"])
-	deleteCategory(id: ID!): ID! @auth(permissions: ["default"])
+  createCategory(input: CreateCategoryInput!): Category!
+    @auth(permissions: ["default"])
+  updateCategory(input: UpdateCategoryInput!): Category!
+    @auth(permissions: ["default"])
+  deleteCategory(id: ID!): ID! @auth(permissions: ["default"])
 }
 
 type Category {
-	id: ID!
-	budgetId: ID!
-	name: String!
-	amount: Float!
-	startDate: DateTime!
-	endDate: DateTime
-	totalSpent: Float
+  id: ID!
+  budget: Budget!
+  name: String!
+  amount: Float!
+  totalSpent: Float!
+  startDate: DateTime!
+  endDate: DateTime
 }
 
 input CreateCategoryInput {
-	name: String!
-	amount: Float!
+  budgetId: ID!
+  name: String!
+  amount: Float!
 }
 
 input UpdateCategoryInput {
-	id: ID!
-	name: String
-	amount: Float
+  id: ID!
+  name: String
+  amount: Float
 }
