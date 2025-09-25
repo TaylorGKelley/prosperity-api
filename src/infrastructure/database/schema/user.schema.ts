@@ -1,9 +1,11 @@
 import { pgTable, uuid } from 'drizzle-orm/pg-core';
-import { budgetTable } from './budget.schema';
+import { relations } from 'drizzle-orm';
+import { userBudgetTable } from './userBudget.schema';
 
 export const userTable = pgTable('users', {
-	id: uuid('id').primaryKey().defaultRandom(),
-	budgetId: uuid('budget_id').references(() => budgetTable.id, {
-		onDelete: 'set null',
-	}),
+  id: uuid('id').primaryKey().defaultRandom(),
 });
+
+export const userRelations = relations(userTable, ({ many }) => ({
+  budgets: many(userBudgetTable),
+}));
