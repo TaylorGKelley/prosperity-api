@@ -1,5 +1,5 @@
 import { db } from '@/infrastructure/database';
-import { budgetTable } from '@/infrastructure/database/schema';
+import { budgetTable, userBudgetTable } from '@/infrastructure/database/schema';
 import { savingGoalTable } from '@/infrastructure/database/schema/savingGoal.schema';
 import {
   type QuerySavingGoalArgs,
@@ -10,7 +10,7 @@ import {
   SavingGoal,
 } from '@/types/schema';
 import { type User } from '@/types/User';
-import { eq, getTableColumns } from 'drizzle-orm';
+import { and, eq, getTableColumns } from 'drizzle-orm';
 import { type UUID } from 'node:crypto';
 
 export class SavingGoals {
@@ -21,7 +21,7 @@ export class SavingGoals {
   }
 
   private _userId: UUID;
-  private readonly savingGoalColumns = {
+  private readonly _savingGoalColumns = {
     ...getTableColumns(savingGoalTable),
     budget: { ...getTableColumns(budgetTable) },
   };
@@ -33,10 +33,16 @@ export class SavingGoals {
     budgetId,
   }: QuerySavingGoalsArgs): Promise<SavingGoal[]> {
     const result = await db
-      .select(this.savingGoalColumns)
+      .select(this._savingGoalColumns)
       .from(savingGoalTable)
       .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
-      .where(eq(savingGoalTable.budgetId, budgetId));
+      .innerJoin(userBudgetTable, eq(userBudgetTable.budgetId, budgetTable.id))
+      .where(
+        and(
+          eq(savingGoalTable.budgetId, budgetId),
+          eq(userBudgetTable.userId, this._userId)
+        )
+      );
 
     return result;
   }
@@ -46,10 +52,19 @@ export class SavingGoals {
   }: QuerySavingGoalArgs): Promise<SavingGoal | undefined> {
     return (
       await db
-        .select(this.savingGoalColumns)
+        .select(this._savingGoalColumns)
         .from(savingGoalTable)
         .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
-        .where(eq(savingGoalTable.id, id))
+        .innerJoin(
+          userBudgetTable,
+          eq(userBudgetTable.budgetId, budgetTable.id)
+        )
+        .where(
+          and(
+            eq(savingGoalTable.id, id),
+            eq(userBudgetTable.userId, this._userId)
+          )
+        )
     )[0];
   }
 
@@ -65,7 +80,7 @@ export class SavingGoals {
 
     return (
       await db
-        .select(this.savingGoalColumns)
+        .select(this._savingGoalColumns)
         .from(savingGoalTable)
         .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
         .where(eq(savingGoalTable.id, result.id))
@@ -90,7 +105,7 @@ export class SavingGoals {
 
     return (
       await db
-        .select(this.savingGoalColumns)
+        .select(this._savingGoalColumns)
         .from(savingGoalTable)
         .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
         .where(eq(savingGoalTable.id, result.id))
