@@ -28,8 +28,8 @@ type PaginatedTransaction {
 type Transaction {
   id: ID!
   tellerId: ID!
-  account: Account!
-  category: Category
+  account: BasicAccount!
+  category: BasicCategory
   amount: Float!
   date: DateTime!
   description: String!

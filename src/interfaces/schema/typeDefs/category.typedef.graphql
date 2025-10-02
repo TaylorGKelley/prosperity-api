@@ -1,5 +1,6 @@
 type Query {
-  categories(monthDate: DateTime!): [Category!]! @auth(permissions: ["default"])
+  categories(monthDate: DateTime!, budgetId: ID!): [Category!]!
+    @auth(permissions: ["default"])
   category(id: ID!): Category! @auth(permissions: ["default"])
 }
 
@@ -17,6 +18,14 @@ type Category {
   name: String!
   amount: Float!
   totalSpent: Float!
+  startDate: DateTime!
+  endDate: DateTime
+}
+
+type BasicCategory {
+  id: ID!
+  name: String!
+  amount: Float!
   startDate: DateTime!
   endDate: DateTime
 }

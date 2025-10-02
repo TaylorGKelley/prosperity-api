@@ -22,6 +22,18 @@ type Account {
   status: StatusEnum!
 }
 
+type BasicAccount {
+  id: ID!
+  currency: String!
+  enrollmentId: String!
+  institution: Institution!
+  lastFour: Int!
+  name: String!
+  type: TypeEnum!
+  subtype: SubtypeEnum!
+  status: StatusEnum!
+}
+
 type Institution {
   id: String!
   name: String!

@@ -150,7 +150,6 @@ export class Transactions {
             ...item,
             account: {
               id: item.id,
-              budget: { id: item.budgetId },
               currency: accountInfo.currency,
               enrollmentId: accountInfo.enrollment_id,
               institution: accountInfo.institution,
@@ -230,7 +229,6 @@ export class Transactions {
       ...result,
       account: {
         id: result.id,
-        budget: { id: result.budgetId },
         currency: accountInfo.currency,
         enrollmentId: accountInfo.enrollment_id,
         institution: accountInfo.institution,
@@ -403,8 +401,8 @@ export class Transactions {
     const result = (
       await db
         .delete(transactionTable)
-        .where(and(eq(transactionTable.id, id)))
-        .returning()
+        .where(eq(transactionTable.id, id))
+        .returning({ id: transactionTable.id })
     )[0];
 
     return result.id as UUID;

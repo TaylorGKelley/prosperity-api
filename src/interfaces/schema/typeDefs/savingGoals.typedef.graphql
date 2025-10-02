@@ -20,6 +20,16 @@ type SavingGoal {
   prioritize: Boolean!
 }
 
+type BasicSavingGoal {
+  id: ID!
+  title: String!
+  targetAmount: Float!
+  currentAmount: Float!
+  contributionAmount: Float!
+  lastContribution: DateTime!
+  prioritize: Boolean!
+}
+
 input CreateSavingGoalInput {
   budgetId: ID!
   title: String!

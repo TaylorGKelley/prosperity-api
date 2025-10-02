@@ -16,7 +16,10 @@ export const accountTable = pgTable(
     accessToken: text('access_token').notNull(),
     accessTokenIV: varchar('access_token_iv', { length: 64 }).notNull(),
   },
-  (table) => [unique().on(table.tellerId).nullsNotDistinct()]
+  (table) => [
+    unique().on(table.id),
+    unique().on(table.tellerId).nullsNotDistinct(),
+  ]
 );
 
 export const accountRelations = relations(accountTable, ({ one, many }) => ({

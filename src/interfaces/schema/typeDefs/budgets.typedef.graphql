@@ -4,9 +4,9 @@ type Query {
 }
 
 type Mutation {
-  createBudget(input: CreateBudgetInput): Budget!
+  createBudget(input: CreateBudgetInput!): Budget!
     @auth(permissions: ["default"])
-  updateBudget(input: UpdateBudgetInput): Budget!
+  updateBudget(input: UpdateBudgetInput!): Budget!
     @auth(permissions: ["default"])
   deleteBudget(id: ID!): ID @auth(permissions: ["default"])
 }
@@ -19,10 +19,11 @@ type Budget {
 
 input CreateBudgetInput {
   name: String!
-  isDefault: Boolean!
+  isDefault: Boolean
 }
 
 input UpdateBudgetInput {
-  name: String!
-  isDefault: Boolean!
+  id: ID!
+  name: String
+  isDefault: Boolean
 }
