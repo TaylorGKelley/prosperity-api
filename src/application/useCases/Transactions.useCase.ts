@@ -62,6 +62,7 @@ export class Transactions {
 
   public async getAll({
     monthDate,
+    budgetId,
     pagination,
   }: QueryTransactionsArgs): Promise<PaginatedTransaction> {
     let cursorFilter = undefined;
@@ -93,9 +94,13 @@ export class Transactions {
         userBudgetTable,
         eq(userBudgetTable.budgetId, accountTable.budgetId)
       )
+      .innerJoin(budgetTable, eq(budgetTable.id, userBudgetTable.budgetId))
       .where(
         and(
           eq(userBudgetTable.userId, this._userId),
+          budgetId
+            ? eq(budgetTable.id, budgetId)
+            : eq(budgetTable.isDefault, true),
           !monthDate
             ? undefined
             : lte(

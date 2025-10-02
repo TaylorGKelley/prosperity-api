@@ -227,13 +227,18 @@ export type QueryAccountArgs = {
 };
 
 
+export type QueryAccountsArgs = {
+  budgetId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type QueryBudgetArgs = {
   id: Scalars['ID']['input'];
 };
 
 
 export type QueryCategoriesArgs = {
-  budgetId: Scalars['ID']['input'];
+  budgetId?: InputMaybe<Scalars['ID']['input']>;
   monthDate: Scalars['DateTime']['input'];
 };
 
@@ -249,7 +254,7 @@ export type QuerySavingGoalArgs = {
 
 
 export type QuerySavingGoalsArgs = {
-  budgetId: Scalars['ID']['input'];
+  budgetId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -259,6 +264,7 @@ export type QueryTransactionArgs = {
 
 
 export type QueryTransactionsArgs = {
+  budgetId?: InputMaybe<Scalars['ID']['input']>;
   monthDate: Scalars['DateTime']['input'];
   pagination?: InputMaybe<CursorPaginationInput>;
 };
@@ -594,13 +600,13 @@ export type PaginatedTransactionResolvers<ContextType = any, ParentType extends 
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType, RequireFields<QueryAccountArgs, 'id'>>;
-  accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType>;
+  accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType, Partial<QueryAccountsArgs>>;
   budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType, RequireFields<QueryBudgetArgs, 'id'>>;
   budgets?: Resolver<Array<ResolversTypes['Budget']>, ParentType, ContextType>;
-  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoriesArgs, 'budgetId' | 'monthDate'>>;
+  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoriesArgs, 'monthDate'>>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<QueryCategoryArgs, 'id'>>;
   savingGoal?: Resolver<Maybe<ResolversTypes['SavingGoal']>, ParentType, ContextType, RequireFields<QuerySavingGoalArgs, 'id'>>;
-  savingGoals?: Resolver<Array<ResolversTypes['SavingGoal']>, ParentType, ContextType, RequireFields<QuerySavingGoalsArgs, 'budgetId'>>;
+  savingGoals?: Resolver<Array<ResolversTypes['SavingGoal']>, ParentType, ContextType, Partial<QuerySavingGoalsArgs>>;
   transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<QueryTransactionArgs, 'id'>>;
   transactions?: Resolver<ResolversTypes['PaginatedTransaction'], ParentType, ContextType, RequireFields<QueryTransactionsArgs, 'monthDate'>>;
 };

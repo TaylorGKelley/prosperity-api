@@ -64,7 +64,9 @@ export class Categories {
       .where(
         and(
           eq(userBudgetTable.userId, this._userId),
-          eq(categoryTable.budgetId, budgetId),
+          budgetId
+            ? eq(budgetTable.id, budgetId)
+            : eq(budgetTable.isDefault, true),
           !monthDate
             ? undefined
             : lte(

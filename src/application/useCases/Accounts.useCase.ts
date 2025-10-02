@@ -5,11 +5,12 @@ import {
   userBudgetTable,
 } from '@/infrastructure/database/schema';
 import { type User } from '@/types/User';
-import { and, eq, getTableColumns } from 'drizzle-orm';
+import { and, eq, getTableColumns, or } from 'drizzle-orm';
 import { type UUID } from 'node:crypto';
 import { AccessToken } from '../utils/AccessToken';
 import TellerClient from '@/infrastructure/configuration/teller-client';
 import {
+  QueryAccountsArgs,
   StatusEnum,
   SubtypeEnum,
   TypeEnum,
@@ -36,13 +37,20 @@ export class Accounts {
     this._userId = userId;
   }
 
-  public async getAll(): Promise<Account[]> {
+  public async getAll({ budgetId }: QueryAccountsArgs): Promise<Account[]> {
     const accountRecords = await db
       .select(this._accountColumns)
       .from(accountTable)
       .innerJoin(budgetTable, eq(budgetTable.id, accountTable.budgetId))
       .innerJoin(userBudgetTable, eq(userBudgetTable.budgetId, budgetTable.id))
-      .where(eq(userBudgetTable.userId, this._userId));
+      .where(
+        and(
+          eq(userBudgetTable.userId, this._userId),
+          budgetId
+            ? eq(budgetTable.id, budgetId)
+            : eq(budgetTable.isDefault, true)
+        )
+      );
 
     const result: Account[] = [];
     for (const accountRecord of accountRecords) {

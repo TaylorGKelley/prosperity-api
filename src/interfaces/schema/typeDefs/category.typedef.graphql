@@ -1,5 +1,5 @@
 type Query {
-  categories(monthDate: DateTime!, budgetId: ID!): [Category!]!
+  categories(monthDate: DateTime!, budgetId: ID): [Category!]!
     @auth(permissions: ["default"])
   category(id: ID!): Category! @auth(permissions: ["default"])
 }

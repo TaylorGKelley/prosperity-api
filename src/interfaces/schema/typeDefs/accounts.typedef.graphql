@@ -1,5 +1,5 @@
 type Query {
-  accounts: [Account!]! @auth(permissions: ["default"])
+  accounts(budgetId: ID): [Account!]! @auth(permissions: ["default"])
   account(id: String!): Account! @auth(permissions: ["default"])
 }
 

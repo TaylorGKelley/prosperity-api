@@ -1,5 +1,5 @@
 type Query {
-  savingGoals(budgetId: ID!): [SavingGoal!]!
+  savingGoals(budgetId: ID): [SavingGoal!]!
   savingGoal(id: ID!): SavingGoal
 }
 

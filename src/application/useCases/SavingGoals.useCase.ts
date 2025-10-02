@@ -39,8 +39,10 @@ export class SavingGoals {
       .innerJoin(userBudgetTable, eq(userBudgetTable.budgetId, budgetTable.id))
       .where(
         and(
-          eq(savingGoalTable.budgetId, budgetId),
-          eq(userBudgetTable.userId, this._userId)
+          eq(userBudgetTable.userId, this._userId),
+          budgetId
+            ? eq(budgetTable.id, budgetId)
+            : eq(budgetTable.isDefault, true)
         )
       );
 
