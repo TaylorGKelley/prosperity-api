@@ -12,6 +12,8 @@ import { savingGoalTable } from '../schema/savingGoal.schema';
 export const budgetData: (typeof budgetTable.$inferInsert)[] = [
   {
     id: '6a1515c3-fabd-4ac9-a839-61d6b3093c41' as UUID,
+    name: 'Home',
+    isDefault: true,
   },
 ];
 
