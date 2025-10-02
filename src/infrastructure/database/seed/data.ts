@@ -19,7 +19,7 @@ export const budgetData: (typeof budgetTable.$inferInsert)[] = [
 
 export const userData: (typeof userTable.$inferInsert)[] = [
   {
-    id: 'e3d9287c-3eeb-4a67-b7a9-c0dba079a087' as UUID,
+    id: 'f1c22d78-8927-4586-ad79-2db1676832bc' as UUID,
   },
 ];
 

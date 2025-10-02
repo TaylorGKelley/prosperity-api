@@ -1,5 +1,10 @@
 import { db } from '..';
-import { accountTable, budgetTable, transactionTable } from '../schema';
+import {
+  accountTable,
+  budgetTable,
+  transactionTable,
+  userBudgetTable,
+} from '../schema';
 import { categoryTable } from '../schema/category.schema';
 import { userTable } from '../schema/user.schema';
 import {
@@ -7,6 +12,7 @@ import {
   budgetData,
   categoryData,
   transactionData,
+  userBudgetData,
   userData,
 } from './data';
 
@@ -15,11 +21,13 @@ async function main() {
     await db.delete(transactionTable);
     await db.delete(categoryTable);
     await db.delete(accountTable);
+    await db.delete(userBudgetTable);
     await db.delete(userTable);
     await db.delete(budgetTable);
 
     await db.insert(budgetTable).values(budgetData);
     await db.insert(userTable).values(userData);
+    await db.insert(userBudgetTable).values(userBudgetData);
     // await db.insert(accountTable).values(accountData);
     await db.insert(categoryTable).values(categoryData);
     // await db.insert(transactionTable).values(transactionData);
