@@ -53,12 +53,13 @@ export class Categories {
       .select({
         ...getTableColumns(categoryTable),
         budget: { ...getTableColumns(budgetTable) },
-        totalSpent: db.$count(
-          transactionTable,
-          eq(transactionTable.categoryId, categoryTable.id)
-        ),
+        totalSpent: sql`sum(${transactionTable.amount})`.mapWith(Number),
       })
       .from(categoryTable)
+      .leftJoin(
+        transactionTable,
+        eq(transactionTable.categoryId, categoryTable.id)
+      )
       .innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
       .innerJoin(userBudgetTable, eq(userBudgetTable.budgetId, budgetTable.id))
       .where(
@@ -92,11 +93,24 @@ export class Categories {
               )
         )
       )
-      .orderBy(asc(categoryTable.name));
+      .orderBy(asc(categoryTable.name))
+      .groupBy((t) => [
+        t.id,
+        t.amount,
+        t.budgetId,
+        t.startDate,
+        t.endDate,
+        t.name,
+        t.budget.id,
+        t.budget.name,
+        t.budget.isDefault,
+      ]);
 
     const otherCategoryTransactions = (
       await db
-        .select({ amount: sql`sum(${transactionTable.id})`.mapWith(Number) })
+        .select({
+          amount: sql`sum(${transactionTable.amount})`.mapWith(Number),
+        })
         .from(transactionTable)
         .where(
           and(
@@ -116,7 +130,7 @@ export class Categories {
         )
     )[0];
 
-    if (otherCategoryTransactions.amount > 0) {
+    if (otherCategoryTransactions?.amount > 0) {
       result.push({
         id: randomUUID() as UUID,
         budget: result[0].budget,
