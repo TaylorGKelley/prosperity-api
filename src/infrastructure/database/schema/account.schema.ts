@@ -2,6 +2,7 @@ import { pgTable, text, unique, uuid, varchar } from 'drizzle-orm/pg-core';
 import { budgetTable } from './budget.schema';
 import { relations } from 'drizzle-orm';
 import { transactionTable } from './transaction.schema';
+import { colorEnum } from './category.schema';
 
 export const accountTable = pgTable(
   'account',
@@ -13,6 +14,13 @@ export const accountTable = pgTable(
         onDelete: 'cascade',
       })
       .notNull(),
+    color: colorEnum('color')
+      .notNull()
+      .default(
+        colorEnum.enumValues[
+          Math.floor(Math.random() * colorEnum.enumValues.length)
+        ]
+      ),
     accessToken: text('access_token').notNull(),
     accessTokenIV: varchar('access_token_iv', { length: 64 }).notNull(),
   },

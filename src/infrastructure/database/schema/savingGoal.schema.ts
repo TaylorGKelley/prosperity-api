@@ -4,6 +4,7 @@ import { pgTable, uuid } from 'drizzle-orm/pg-core';
 import { budgetTable } from './budget.schema';
 import { boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { colorEnum, iconEnum } from './category.schema';
 
 export const savingGoalTable = pgTable(
   'saving_goal',
@@ -15,6 +16,20 @@ export const savingGoalTable = pgTable(
       })
       .notNull(),
     title: varchar('title', { length: 256 }).notNull(),
+    icon: iconEnum('icon')
+      .notNull()
+      .default(
+        iconEnum.enumValues[
+          Math.floor(Math.random() * iconEnum.enumValues.length)
+        ]
+      ),
+    color: colorEnum('color')
+      .notNull()
+      .default(
+        colorEnum.enumValues[
+          Math.floor(Math.random() * colorEnum.enumValues.length)
+        ]
+      ),
     targetAmount: real('target_amount').notNull(),
     currentAmount: real('current_amount').notNull().default(0),
     contributionAmount: real('contribution_amount').notNull(),

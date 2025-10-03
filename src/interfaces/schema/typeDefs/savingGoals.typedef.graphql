@@ -13,6 +13,8 @@ type SavingGoal {
   id: ID!
   budget: Budget!
   title: String!
+  icon: IconEnum!
+  color: ColorEnum!
   targetAmount: Float!
   currentAmount: Float!
   contributionAmount: Float!

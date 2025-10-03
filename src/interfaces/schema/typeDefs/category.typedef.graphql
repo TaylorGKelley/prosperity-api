@@ -16,6 +16,8 @@ type Category {
   id: ID!
   budget: Budget!
   name: String!
+  icon: IconEnum!
+  color: ColorEnum!
   amount: Float!
   totalSpent: Float!
   startDate: DateTime!

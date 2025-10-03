@@ -17,6 +17,7 @@ type Account {
   institution: Institution!
   lastFour: Int!
   name: String!
+  color: ColorEnum!
   type: TypeEnum!
   subtype: SubtypeEnum!
   status: StatusEnum!
@@ -29,6 +30,7 @@ type BasicAccount {
   institution: Institution!
   lastFour: Int!
   name: String!
+  color: ColorEnum!
   type: TypeEnum!
   subtype: SubtypeEnum!
   status: StatusEnum!

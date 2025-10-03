@@ -16,11 +16,6 @@ type Mutation {
   deleteTransaction(id: ID!): ID! @auth(permissions: ["default"])
 }
 
-enum TransactionStatusEnum {
-  POSTED
-  PENDING
-}
-
 type PaginatedTransaction {
   items: [Transaction!]!
   pageInfo: PageInformation
