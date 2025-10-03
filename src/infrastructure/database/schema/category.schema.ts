@@ -97,7 +97,7 @@ export const iconEnum = pgEnum('icon', [
   'HOSPITAL',
   'HOTEL',
   'HOUSE',
-  'ICE_CREAM-CONE',
+  'ICE_CREAM_CONE',
   'LAMP',
   'LAPTOP',
   'LEAF',

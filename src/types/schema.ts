@@ -21,28 +21,50 @@ export type Scalars = {
 export type Account = {
   __typename?: 'Account';
   budget: Budget;
+  color: ColorEnum;
   currency: Scalars['String']['output'];
   enrollmentId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   institution: Institution;
   lastFour: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  status: StatusEnum;
-  subtype: SubtypeEnum;
-  type: TypeEnum;
+  status: AccountStatusEnum;
+  subtype: AccountSubtypeEnum;
+  type: AccountTypeEnum;
 };
+
+export enum AccountStatusEnum {
+  Closed = 'CLOSED',
+  Open = 'OPEN'
+}
+
+export enum AccountSubtypeEnum {
+  CertificateOfDeposit = 'CERTIFICATE_OF_DEPOSIT',
+  Checking = 'CHECKING',
+  CreditCard = 'CREDIT_CARD',
+  MoneyMarket = 'MONEY_MARKET',
+  Savings = 'SAVINGS',
+  Sweep = 'SWEEP',
+  Treasury = 'TREASURY'
+}
+
+export enum AccountTypeEnum {
+  Credit = 'CREDIT',
+  Depository = 'DEPOSITORY'
+}
 
 export type BasicAccount = {
   __typename?: 'BasicAccount';
+  color: ColorEnum;
   currency: Scalars['String']['output'];
   enrollmentId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   institution: Institution;
   lastFour: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  status: StatusEnum;
-  subtype: SubtypeEnum;
-  type: TypeEnum;
+  status: AccountStatusEnum;
+  subtype: AccountSubtypeEnum;
+  type: AccountTypeEnum;
 };
 
 export type BasicCategory = {
@@ -67,6 +89,7 @@ export type BasicSavingGoal = {
 
 export type Budget = {
   __typename?: 'Budget';
+  color: ColorEnum;
   id: Scalars['ID']['output'];
   isDefault: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
@@ -76,12 +99,36 @@ export type Category = {
   __typename?: 'Category';
   amount: Scalars['Float']['output'];
   budget: Budget;
+  color: ColorEnum;
   endDate?: Maybe<Scalars['DateTime']['output']>;
+  icon: IconEnum;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   startDate: Scalars['DateTime']['output'];
   totalSpent: Scalars['Float']['output'];
 };
+
+export enum ColorEnum {
+  Amber = 'AMBER',
+  Blue = 'BLUE',
+  BlueGray = 'BLUE_GRAY',
+  Cyan = 'CYAN',
+  Emerald = 'EMERALD',
+  Fuschia = 'FUSCHIA',
+  Green = 'GREEN',
+  Indigo = 'INDIGO',
+  LightBlue = 'LIGHT_BLUE',
+  Lime = 'LIME',
+  Orange = 'ORANGE',
+  Pink = 'PINK',
+  Purple = 'PURPLE',
+  Red = 'RED',
+  Rose = 'ROSE',
+  Teal = 'TEAL',
+  Violet = 'VIOLET',
+  WarmGray = 'WARM_GRAY',
+  Yellow = 'YELLOW'
+}
 
 export type CreateAccountInput = {
   accessToken: Scalars['String']['input'];
@@ -110,6 +157,160 @@ export type CursorPaginationInput = {
   count: Scalars['Int']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
 };
+
+export enum IconEnum {
+  AlarmClock = 'ALARM_CLOCK',
+  Album = 'ALBUM',
+  Ambulance = 'AMBULANCE',
+  Amphora = 'AMPHORA',
+  Anchor = 'ANCHOR',
+  Antenna = 'ANTENNA',
+  Anvil = 'ANVIL',
+  Apple = 'APPLE',
+  Archive = 'ARCHIVE',
+  Armchair = 'ARMCHAIR',
+  Axe = 'AXE',
+  Baby = 'BABY',
+  Backpack = 'BACKPACK',
+  Bananna = 'BANANNA',
+  Bandage = 'BANDAGE',
+  Banknote = 'BANKNOTE',
+  Bath = 'BATH',
+  Bean = 'BEAN',
+  Bed = 'BED',
+  Beef = 'BEEF',
+  Beer = 'BEER',
+  BicepsFlexed = 'BICEPS_FLEXED',
+  Bike = 'BIKE',
+  Binoculars = 'BINOCULARS',
+  Bird = 'BIRD',
+  Book = 'BOOK',
+  BoomBox = 'BOOM_BOX',
+  Bot = 'BOT',
+  BowArrow = 'BOW_ARROW',
+  Brain = 'BRAIN',
+  Briefcase = 'BRIEFCASE',
+  Brush = 'BRUSH',
+  BrushCleaning = 'BRUSH_CLEANING',
+  Bubbles = 'BUBBLES',
+  Bug = 'BUG',
+  Building = 'BUILDING',
+  Bus = 'BUS',
+  Cable = 'CABLE',
+  Cake = 'CAKE',
+  Calculator = 'CALCULATOR',
+  Camera = 'CAMERA',
+  Candy = 'CANDY',
+  CandyCane = 'CANDY_CANE',
+  Car = 'CAR',
+  Caravan = 'CARAVAN',
+  Carrot = 'CARROT',
+  CarFront = 'CAR_FRONT',
+  Castle = 'CASTLE',
+  Cat = 'CAT',
+  ChefHat = 'CHEF_HAT',
+  Cherry = 'CHERRY',
+  Church = 'CHURCH',
+  Cigarette = 'CIGARETTE',
+  CircleDashed = 'CIRCLE_DASHED',
+  Citrus = 'CITRUS',
+  Clapperboard = 'CLAPPERBOARD',
+  Clipboard = 'CLIPBOARD',
+  Clock = 'CLOCK',
+  Cloud = 'CLOUD',
+  Clover = 'CLOVER',
+  Coffee = 'COFFEE',
+  Cookie = 'COOKIE',
+  Croissant = 'CROISSANT',
+  Dog = 'DOG',
+  DoorClosed = 'DOOR_CLOSED',
+  Drama = 'DRAMA',
+  Drill = 'DRILL',
+  Drum = 'DRUM',
+  Drumstick = 'DRUMSTICK',
+  Dumbbell = 'DUMBBELL',
+  Earth = 'EARTH',
+  Ellipsis = 'ELLIPSIS',
+  Fuel = 'FUEL',
+  Gamepad = 'GAMEPAD',
+  Ghost = 'GHOST',
+  Gift = 'GIFT',
+  GlassWater = 'GLASS_WATER',
+  Guitar = 'GUITAR',
+  Ham = 'HAM',
+  Hamburger = 'HAMBURGER',
+  Hammer = 'HAMMER',
+  HatGlasses = 'HAT_GLASSES',
+  Headphones = 'HEADPHONES',
+  Heart = 'HEART',
+  Hospital = 'HOSPITAL',
+  Hotel = 'HOTEL',
+  House = 'HOUSE',
+  IceCreamCone = 'ICE_CREAM_CONE',
+  Lamp = 'LAMP',
+  Laptop = 'LAPTOP',
+  Leaf = 'LEAF',
+  Lightbulb = 'LIGHTBULB',
+  Martini = 'MARTINI',
+  Medal = 'MEDAL',
+  Mountain = 'MOUNTAIN',
+  Newspaper = 'NEWSPAPER',
+  Package = 'PACKAGE',
+  Paintbrush = 'PAINTBRUSH',
+  Palette = 'PALETTE',
+  PartyPopper = 'PARTY_POPPER',
+  PawPrint = 'PAW_PRINT',
+  Phone = 'PHONE',
+  Piano = 'PIANO',
+  Pickaxe = 'PICKAXE',
+  PiggyBank = 'PIGGY_BANK',
+  Pizza = 'PIZZA',
+  Plane = 'PLANE',
+  PocketKnife = 'POCKET_KNIFE',
+  Popcorn = 'POPCORN',
+  Popsicle = 'POPSICLE',
+  Printer = 'PRINTER',
+  Puzzle = 'PUZZLE',
+  Rabbit = 'RABBIT',
+  Rat = 'RAT',
+  ReceiptText = 'RECEIPT_TEXT',
+  Rocket = 'ROCKET',
+  RockingChair = 'ROCKING_CHAIR',
+  RollerCoaster = 'ROLLER_COASTER',
+  Sailboat = 'SAILBOAT',
+  Salad = 'SALAD',
+  Sandwich = 'SANDWICH',
+  Ship = 'SHIP',
+  Shirt = 'SHIRT',
+  ShoppingBag = 'SHOPPING_BAG',
+  ShoppingBasket = 'SHOPPING_BASKET',
+  ShoppingCart = 'SHOPPING_CART',
+  Shovel = 'SHOVEL',
+  ShowerHead = 'SHOWER_HEAD',
+  Shrimp = 'SHRIMP',
+  Shrub = 'SHRUB',
+  Skull = 'SKULL',
+  Snowflake = 'SNOWFLAKE',
+  Sofa = 'SOFA',
+  Speaker = 'SPEAKER',
+  Sprout = 'SPROUT',
+  Squirrel = 'SQUIRREL',
+  Stethoscope = 'STETHOSCOPE',
+  Store = 'STORE',
+  Sun = 'SUN',
+  Tag = 'TAG',
+  TentTree = 'TENT_TREE',
+  Theater = 'THEATER',
+  Tractor = 'TRACTOR',
+  TreePine = 'TREE_PINE',
+  Truck = 'TRUCK',
+  Turtle = 'TURTLE',
+  Umbrella = 'UMBRELLA',
+  Utensils = 'UTENSILS',
+  Wallet = 'WALLET',
+  Wheat = 'WHEAT',
+  Wrench = 'WRENCH'
+}
 
 export type Institution = {
   __typename?: 'Institution';
@@ -272,8 +473,10 @@ export type QueryTransactionsArgs = {
 export type SavingGoal = {
   __typename?: 'SavingGoal';
   budget: Budget;
+  color: ColorEnum;
   contributionAmount: Scalars['Float']['output'];
   currentAmount: Scalars['Float']['output'];
+  icon: IconEnum;
   id: Scalars['ID']['output'];
   lastContribution: Scalars['DateTime']['output'];
   prioritize: Scalars['Boolean']['output'];
@@ -281,30 +484,10 @@ export type SavingGoal = {
   title: Scalars['String']['output'];
 };
 
-export enum StatusEnum {
-  Closed = 'CLOSED',
-  Open = 'OPEN'
-}
-
-export enum SubtypeEnum {
-  CertificateOfDeposit = 'CERTIFICATE_OF_DEPOSIT',
-  Checking = 'CHECKING',
-  CreditCard = 'CREDIT_CARD',
-  MoneyMarket = 'MONEY_MARKET',
-  Savings = 'SAVINGS',
-  Sweep = 'SWEEP',
-  Treasury = 'TREASURY'
-}
-
-export enum SyncStatusEnum {
-  Error = 'ERROR',
-  Success = 'SUCCESS'
-}
-
 export type SyncTransactions = {
   __typename?: 'SyncTransactions';
   error?: Maybe<Scalars['String']['output']>;
-  status: SyncStatusEnum;
+  status: TransactionSyncStatusEnum;
 };
 
 export type Transaction = {
@@ -325,10 +508,15 @@ export enum TransactionStatusEnum {
   Posted = 'POSTED'
 }
 
-export enum TypeEnum {
-  Credit = 'CREDIT',
-  Depository = 'DEPOSITORY'
+export enum TransactionSyncStatusEnum {
+  Error = 'ERROR',
+  Success = 'SUCCESS'
 }
+
+export type UpdateAccountInput = {
+  color?: InputMaybe<ColorEnum>;
+  id: Scalars['ID']['input'];
+};
 
 export type UpdateBudgetInput = {
   id: Scalars['ID']['input'];
@@ -422,12 +610,16 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Account: ResolverTypeWrapper<Account>;
+  AccountStatusEnum: AccountStatusEnum;
+  AccountSubtypeEnum: AccountSubtypeEnum;
+  AccountTypeEnum: AccountTypeEnum;
   BasicAccount: ResolverTypeWrapper<BasicAccount>;
   BasicCategory: ResolverTypeWrapper<BasicCategory>;
   BasicSavingGoal: ResolverTypeWrapper<BasicSavingGoal>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Budget: ResolverTypeWrapper<Budget>;
   Category: ResolverTypeWrapper<Category>;
+  ColorEnum: ColorEnum;
   CreateAccountInput: CreateAccountInput;
   CreateBudgetInput: CreateBudgetInput;
   CreateCategoryInput: CreateCategoryInput;
@@ -437,6 +629,7 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  IconEnum: IconEnum;
   Institution: ResolverTypeWrapper<Institution>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -444,14 +637,12 @@ export type ResolversTypes = {
   PaginatedTransaction: ResolverTypeWrapper<PaginatedTransaction>;
   Query: ResolverTypeWrapper<{}>;
   SavingGoal: ResolverTypeWrapper<SavingGoal>;
-  StatusEnum: StatusEnum;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  SubtypeEnum: SubtypeEnum;
-  SyncStatusEnum: SyncStatusEnum;
   SyncTransactions: ResolverTypeWrapper<SyncTransactions>;
   Transaction: ResolverTypeWrapper<Transaction>;
   TransactionStatusEnum: TransactionStatusEnum;
-  TypeEnum: TypeEnum;
+  TransactionSyncStatusEnum: TransactionSyncStatusEnum;
+  UpdateAccountInput: UpdateAccountInput;
   UpdateBudgetInput: UpdateBudgetInput;
   UpdateCategoryInput: UpdateCategoryInput;
   UpdateSavingGoalInput: UpdateSavingGoalInput;
@@ -485,6 +676,7 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   SyncTransactions: SyncTransactions;
   Transaction: Transaction;
+  UpdateAccountInput: UpdateAccountInput;
   UpdateBudgetInput: UpdateBudgetInput;
   UpdateCategoryInput: UpdateCategoryInput;
   UpdateSavingGoalInput: UpdateSavingGoalInput;
@@ -492,28 +684,30 @@ export type ResolversParentTypes = {
 
 export type AccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = {
   budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
+  color?: Resolver<ResolversTypes['ColorEnum'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   enrollmentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   institution?: Resolver<ResolversTypes['Institution'], ParentType, ContextType>;
   lastFour?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['StatusEnum'], ParentType, ContextType>;
-  subtype?: Resolver<ResolversTypes['SubtypeEnum'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['TypeEnum'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['AccountStatusEnum'], ParentType, ContextType>;
+  subtype?: Resolver<ResolversTypes['AccountSubtypeEnum'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['AccountTypeEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type BasicAccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['BasicAccount'] = ResolversParentTypes['BasicAccount']> = {
+  color?: Resolver<ResolversTypes['ColorEnum'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   enrollmentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   institution?: Resolver<ResolversTypes['Institution'], ParentType, ContextType>;
   lastFour?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['StatusEnum'], ParentType, ContextType>;
-  subtype?: Resolver<ResolversTypes['SubtypeEnum'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['TypeEnum'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['AccountStatusEnum'], ParentType, ContextType>;
+  subtype?: Resolver<ResolversTypes['AccountSubtypeEnum'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['AccountTypeEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -538,6 +732,7 @@ export type BasicSavingGoalResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type BudgetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Budget'] = ResolversParentTypes['Budget']> = {
+  color?: Resolver<ResolversTypes['ColorEnum'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isDefault?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -547,7 +742,9 @@ export type BudgetResolvers<ContextType = any, ParentType extends ResolversParen
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
+  color?: Resolver<ResolversTypes['ColorEnum'], ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  icon?: Resolver<ResolversTypes['IconEnum'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -613,8 +810,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type SavingGoalResolvers<ContextType = any, ParentType extends ResolversParentTypes['SavingGoal'] = ResolversParentTypes['SavingGoal']> = {
   budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
+  color?: Resolver<ResolversTypes['ColorEnum'], ParentType, ContextType>;
   contributionAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   currentAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  icon?: Resolver<ResolversTypes['IconEnum'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastContribution?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   prioritize?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -625,7 +824,7 @@ export type SavingGoalResolvers<ContextType = any, ParentType extends ResolversP
 
 export type SyncTransactionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SyncTransactions'] = ResolversParentTypes['SyncTransactions']> = {
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['SyncStatusEnum'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['TransactionSyncStatusEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -6,6 +6,8 @@ import {
   type MutationCreateCategoryArgs,
   type MutationUpdateCategoryArgs,
   type MutationDeleteCategoryArgs,
+  ColorEnum,
+  IconEnum,
 } from '@/types/schema';
 import { type User } from '@/types/User';
 import { db } from '@/infrastructure/database';
@@ -27,6 +29,7 @@ import {
   userBudgetTable,
 } from '@/infrastructure/database/schema';
 import { lte } from 'drizzle-orm';
+import snakeToPascalCase from '../utils/snakeToPascalCase';
 
 export class Categories {
   public static forUser(user: User | null) {
@@ -49,7 +52,7 @@ export class Categories {
     budgetId,
   }: QueryCategoriesArgs): Promise<Category[]> {
     // Then get categories
-    const result: Category[] = await db
+    const results = await db
       .select({
         ...getTableColumns(categoryTable),
         budget: { ...getTableColumns(budgetTable) },
@@ -131,17 +134,19 @@ export class Categories {
     )[0];
 
     if (otherCategoryTransactions?.amount > 0) {
-      result.push({
+      results.push({
         id: randomUUID() as UUID,
-        budget: result[0].budget,
+        budget: results[0].budget,
         name: 'Uncategorized',
+        color: ColorEnum.Blue,
+        icon: IconEnum.Ellipsis,
         amount: 0,
         totalSpent: otherCategoryTransactions.amount,
         startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      } satisfies Category);
+      });
     }
 
-    return result;
+    return results;
   }
 
   public async get({ id }: QueryCategoryArgs): Promise<Category | undefined> {
@@ -283,7 +288,19 @@ export class Categories {
         .limit(1)
     )[0];
 
-    return result!;
+    return {
+      ...result!,
+      color:
+        ColorEnum[snakeToPascalCase(result.color) as keyof typeof ColorEnum],
+      icon: IconEnum[snakeToPascalCase(result.icon) as keyof typeof IconEnum],
+      budget: {
+        ...result.budget,
+        color:
+          ColorEnum[
+            snakeToPascalCase(result.budget.color) as keyof typeof ColorEnum
+          ],
+      },
+    };
   }
 
   public async delete({ id }: MutationDeleteCategoryArgs): Promise<UUID> {

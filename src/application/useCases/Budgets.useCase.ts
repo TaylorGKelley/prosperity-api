@@ -2,6 +2,7 @@ import { db } from '@/infrastructure/database';
 import { budgetTable, userBudgetTable } from '@/infrastructure/database/schema';
 import {
   Budget,
+  ColorEnum,
   MutationCreateBudgetArgs,
   MutationDeleteBudgetArgs,
   MutationUpdateBudgetArgs,
@@ -10,6 +11,7 @@ import {
 import { type User } from '@/types/User';
 import { and, eq, getTableColumns, not } from 'drizzle-orm';
 import { type UUID } from 'node:crypto';
+import snakeToPascalCase from '../utils/snakeToPascalCase';
 
 export class Budgets {
   public static forUser(user: User | null) {
@@ -24,13 +26,17 @@ export class Budgets {
   }
 
   public async getAll(): Promise<Budget[]> {
-    const result = await db
+    const results = await db
       .select(getTableColumns(budgetTable))
       .from(budgetTable)
       .innerJoin(userBudgetTable, eq(userBudgetTable.budgetId, budgetTable.id))
       .where(eq(userBudgetTable.userId, this._userId));
 
-    return result;
+    return results.map((result) => ({
+      ...result,
+      color:
+        ColorEnum[snakeToPascalCase(result.color) as keyof typeof ColorEnum],
+    }));
   }
 
   public async get({ id }: QueryBudgetArgs): Promise<Budget> {
@@ -47,7 +53,11 @@ export class Budgets {
         )
     )[0];
 
-    return result;
+    return {
+      ...result,
+      color:
+        ColorEnum[snakeToPascalCase(result.color) as keyof typeof ColorEnum],
+    };
   }
 
   public async create({ input }: MutationCreateBudgetArgs): Promise<Budget> {
@@ -78,7 +88,11 @@ export class Budgets {
         .values({ userId: this._userId, budgetId: result.id });
     });
 
-    return result!;
+    return {
+      ...result!,
+      color:
+        ColorEnum[snakeToPascalCase(result!.color) as keyof typeof ColorEnum],
+    };
   }
 
   public async update({ input }: MutationUpdateBudgetArgs): Promise<Budget> {
@@ -107,7 +121,11 @@ export class Budgets {
       }
     });
 
-    return result!;
+    return {
+      ...result!,
+      color:
+        ColorEnum[snakeToPascalCase(result!.color) as keyof typeof ColorEnum],
+    };
   }
 
   public async delete({ id }: MutationDeleteBudgetArgs): Promise<UUID> {

@@ -11,13 +11,14 @@ import { AccessToken } from '../utils/AccessToken';
 import TellerClient from '@/infrastructure/configuration/teller-client';
 import {
   QueryAccountsArgs,
-  StatusEnum,
-  SubtypeEnum,
-  TypeEnum,
+  AccountStatusEnum,
+  AccountSubtypeEnum,
+  AccountTypeEnum,
   type Account,
   type MutationCreateAccountArgs,
   type MutationDeleteAccountArgs,
   type QueryAccountArgs,
+  ColorEnum,
 } from '@/types/schema';
 import snakeToPascalCase from '../utils/snakeToPascalCase';
 
@@ -65,22 +66,38 @@ export class Accounts {
 
       result.push({
         id: accountRecord.id,
-        budget: accountRecord.budget,
+        budget: {
+          ...accountRecord.budget,
+          color:
+            ColorEnum[
+              snakeToPascalCase(
+                accountRecord.budget.color
+              ) as keyof typeof ColorEnum
+            ],
+        },
         currency: accountInfo.currency,
         enrollmentId: accountInfo.enrollment_id,
         institution: accountInfo.institution,
         lastFour: parseInt(accountInfo.last_four),
         name: accountInfo.name,
-        type: TypeEnum[
-          snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+        color:
+          ColorEnum[
+            snakeToPascalCase(accountRecord.color) as keyof typeof ColorEnum
+          ],
+        type: AccountTypeEnum[
+          snakeToPascalCase(accountInfo.type) as keyof typeof AccountTypeEnum
         ],
         subtype:
-          SubtypeEnum[
-            snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+          AccountSubtypeEnum[
+            snakeToPascalCase(
+              accountInfo.subtype
+            ) as keyof typeof AccountSubtypeEnum
           ],
         status:
-          StatusEnum[
-            snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+          AccountStatusEnum[
+            snakeToPascalCase(
+              accountInfo.status
+            ) as keyof typeof AccountStatusEnum
           ],
       });
     }
@@ -113,22 +130,34 @@ export class Accounts {
 
     return {
       id: result.id,
-      budget: result.budget,
+      budget: {
+        ...result.budget,
+        color:
+          ColorEnum[
+            snakeToPascalCase(result.budget.color) as keyof typeof ColorEnum
+          ],
+      },
       currency: accountInfo.currency,
       enrollmentId: accountInfo.enrollment_id,
       institution: accountInfo.institution,
       lastFour: parseInt(accountInfo.last_four),
       name: accountInfo.name,
-      type: TypeEnum[
-        snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+      color:
+        ColorEnum[snakeToPascalCase(result.color) as keyof typeof ColorEnum],
+      type: AccountTypeEnum[
+        snakeToPascalCase(accountInfo.type) as keyof typeof AccountTypeEnum
       ],
       subtype:
-        SubtypeEnum[
-          snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+        AccountSubtypeEnum[
+          snakeToPascalCase(
+            accountInfo.subtype
+          ) as keyof typeof AccountSubtypeEnum
         ],
       status:
-        StatusEnum[
-          snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+        AccountStatusEnum[
+          snakeToPascalCase(
+            accountInfo.status
+          ) as keyof typeof AccountStatusEnum
         ],
     };
   }
@@ -166,6 +195,7 @@ export class Accounts {
         .returning({
           id: accountTable.id,
           tellerId: accountTable.tellerId,
+          color: accountTable.color,
         });
 
       return results.map((result) => {
@@ -175,22 +205,36 @@ export class Accounts {
 
         return {
           id: result.id,
-          budget: budget,
+          budget: {
+            ...budget,
+            color:
+              ColorEnum[
+                snakeToPascalCase(budget.color) as keyof typeof ColorEnum
+              ],
+          },
           currency: accountInfo.currency,
           enrollmentId: accountInfo.enrollment_id,
           institution: accountInfo.institution,
           lastFour: parseInt(accountInfo.last_four),
           name: accountInfo.name,
-          type: TypeEnum[
-            snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+          color:
+            ColorEnum[
+              snakeToPascalCase(result.color) as keyof typeof ColorEnum
+            ],
+          type: AccountTypeEnum[
+            snakeToPascalCase(accountInfo.type) as keyof typeof AccountTypeEnum
           ],
           subtype:
-            SubtypeEnum[
-              snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+            AccountSubtypeEnum[
+              snakeToPascalCase(
+                accountInfo.subtype
+              ) as keyof typeof AccountSubtypeEnum
             ],
           status:
-            StatusEnum[
-              snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+            AccountStatusEnum[
+              snakeToPascalCase(
+                accountInfo.status
+              ) as keyof typeof AccountStatusEnum
             ],
         };
       });

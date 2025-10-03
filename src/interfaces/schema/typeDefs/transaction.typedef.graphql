@@ -33,13 +33,8 @@ type Transaction {
   type: String!
 }
 
-enum SyncStatusEnum {
-  SUCCESS
-  ERROR
-}
-
 type SyncTransactions {
-  status: SyncStatusEnum!
+  status: TransactionSyncStatusEnum!
   error: String
 }
 

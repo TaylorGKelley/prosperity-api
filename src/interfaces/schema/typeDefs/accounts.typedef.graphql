@@ -18,9 +18,9 @@ type Account {
   lastFour: Int!
   name: String!
   color: ColorEnum!
-  type: TypeEnum!
-  subtype: SubtypeEnum!
-  status: StatusEnum!
+  type: AccountTypeEnum!
+  subtype: AccountSubtypeEnum!
+  status: AccountStatusEnum!
 }
 
 type BasicAccount {
@@ -31,9 +31,9 @@ type BasicAccount {
   lastFour: Int!
   name: String!
   color: ColorEnum!
-  type: TypeEnum!
-  subtype: SubtypeEnum!
-  status: StatusEnum!
+  type: AccountTypeEnum!
+  subtype: AccountSubtypeEnum!
+  status: AccountStatusEnum!
 }
 
 type Institution {
@@ -41,26 +41,11 @@ type Institution {
   name: String!
 }
 
-enum TypeEnum {
-  DEPOSITORY
-  CREDIT
-}
-
-enum SubtypeEnum {
-  CREDIT_CARD
-  CHECKING
-  SAVINGS
-  MONEY_MARKET
-  CERTIFICATE_OF_DEPOSIT
-  TREASURY
-  SWEEP
-}
-
-enum StatusEnum {
-  OPEN
-  CLOSED
-}
-
 input CreateAccountInput {
   accessToken: String!
+}
+
+input UpdateAccountInput {
+  id: ID!
+  color: ColorEnum
 }
