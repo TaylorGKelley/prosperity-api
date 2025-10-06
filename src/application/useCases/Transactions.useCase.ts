@@ -16,10 +16,12 @@ import {
   type PaginatedTransaction,
   TransactionStatusEnum,
   SyncTransactions,
-  SyncStatusEnum,
-  TypeEnum,
-  SubtypeEnum,
-  StatusEnum,
+  TransactionSyncStatusEnum,
+  AccountTypeEnum,
+  AccountSubtypeEnum,
+  AccountStatusEnum,
+  ColorEnum,
+  IconEnum,
 } from '@/types/schema';
 import { User } from '@/types/User';
 import {
@@ -160,21 +162,41 @@ export class Transactions {
               institution: accountInfo.institution,
               lastFour: parseInt(accountInfo.last_four),
               name: accountInfo.name,
-              type: TypeEnum[
-                snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+              color:
+                ColorEnum[
+                  snakeToPascalCase(
+                    item.account.color
+                  ) as keyof typeof ColorEnum
+                ],
+              type: AccountTypeEnum[
+                snakeToPascalCase(
+                  accountInfo.type
+                ) as keyof typeof AccountTypeEnum
               ],
               subtype:
-                SubtypeEnum[
+                AccountSubtypeEnum[
                   snakeToPascalCase(
                     accountInfo.subtype
-                  ) as keyof typeof SubtypeEnum
+                  ) as keyof typeof AccountSubtypeEnum
                 ],
               status:
-                StatusEnum[
+                AccountStatusEnum[
                   snakeToPascalCase(
                     accountInfo.status
-                  ) as keyof typeof StatusEnum
+                  ) as keyof typeof AccountStatusEnum
                 ],
+            },
+            category: item.category && {
+              ...item.category,
+              color:
+                ColorEnum[
+                  snakeToPascalCase(
+                    item.category.color
+                  ) as keyof typeof ColorEnum
+                ],
+              icon: IconEnum[
+                snakeToPascalCase(item.category.icon) as keyof typeof IconEnum
+              ],
             },
             status:
               TransactionStatusEnum[
@@ -182,7 +204,7 @@ export class Transactions {
                   item.status
                 ) as keyof typeof TransactionStatusEnum
               ],
-          };
+          } as Transaction;
         })
       ),
       pageInfo: pagination && {
@@ -239,17 +261,36 @@ export class Transactions {
         institution: accountInfo.institution,
         lastFour: parseInt(accountInfo.last_four),
         name: accountInfo.name,
-        type: TypeEnum[
-          snakeToPascalCase(accountInfo.type) as keyof typeof TypeEnum
+        color:
+          ColorEnum[
+            snakeToPascalCase(result.account.color) as keyof typeof ColorEnum
+          ],
+
+        type: AccountTypeEnum[
+          snakeToPascalCase(accountInfo.type) as keyof typeof AccountTypeEnum
         ],
         subtype:
-          SubtypeEnum[
-            snakeToPascalCase(accountInfo.subtype) as keyof typeof SubtypeEnum
+          AccountSubtypeEnum[
+            snakeToPascalCase(
+              accountInfo.subtype
+            ) as keyof typeof AccountSubtypeEnum
           ],
         status:
-          StatusEnum[
-            snakeToPascalCase(accountInfo.status) as keyof typeof StatusEnum
+          AccountStatusEnum[
+            snakeToPascalCase(
+              accountInfo.status
+            ) as keyof typeof AccountStatusEnum
           ],
+      },
+      category: result.category && {
+        ...result.category,
+        color:
+          ColorEnum[
+            snakeToPascalCase(result.category.color) as keyof typeof ColorEnum
+          ],
+        icon: IconEnum[
+          snakeToPascalCase(result.category.icon) as keyof typeof IconEnum
+        ],
       },
       status:
         TransactionStatusEnum[
@@ -358,10 +399,13 @@ export class Transactions {
       });
 
       return {
-        status: SyncStatusEnum.Success,
+        status: TransactionSyncStatusEnum.Success,
       };
     } catch (error) {
-      return { status: SyncStatusEnum.Error, error: (error as Error).message };
+      return {
+        status: TransactionSyncStatusEnum.Error,
+        error: (error as Error).message,
+      };
     }
   }
 

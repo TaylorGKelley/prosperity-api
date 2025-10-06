@@ -52,67 +52,88 @@ export class Categories {
     budgetId,
   }: QueryCategoriesArgs): Promise<Category[]> {
     // Then get categories
-    const results = await db
-      .select({
-        ...getTableColumns(categoryTable),
-        budget: { ...getTableColumns(budgetTable) },
-        totalSpent: sql`sum(${transactionTable.amount})`.mapWith(Number),
-      })
-      .from(categoryTable)
-      .leftJoin(
-        transactionTable,
-        eq(transactionTable.categoryId, categoryTable.id)
-      )
-      .innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
-      .innerJoin(userBudgetTable, eq(userBudgetTable.budgetId, budgetTable.id))
-      .where(
-        and(
-          eq(userBudgetTable.userId, this._userId),
-          budgetId
-            ? eq(budgetTable.id, budgetId)
-            : eq(budgetTable.isDefault, true),
-          !monthDate
-            ? undefined
-            : lte(
-                categoryTable.startDate,
-                new Date(
-                  monthDate.getUTCFullYear(),
-                  monthDate.getUTCMonth() + 1,
-                  0
-                )
-              ),
-          !monthDate
-            ? undefined
-            : or(
-                isNull(categoryTable.endDate),
-                gte(
-                  categoryTable.endDate,
+    const results = (
+      await db
+        .select({
+          ...getTableColumns(categoryTable),
+          budget: { ...getTableColumns(budgetTable) },
+          totalSpent: sql`COALESCE(sum(${transactionTable.amount}), 0)`.mapWith(
+            Number
+          ),
+        })
+        .from(categoryTable)
+        .leftJoin(
+          transactionTable,
+          eq(transactionTable.categoryId, categoryTable.id)
+        )
+        .innerJoin(budgetTable, eq(budgetTable.id, categoryTable.budgetId))
+        .innerJoin(
+          userBudgetTable,
+          eq(userBudgetTable.budgetId, budgetTable.id)
+        )
+        .where(
+          and(
+            eq(userBudgetTable.userId, this._userId),
+            budgetId
+              ? eq(budgetTable.id, budgetId)
+              : eq(budgetTable.isDefault, true),
+            !monthDate
+              ? undefined
+              : lte(
+                  categoryTable.startDate,
                   new Date(
                     monthDate.getUTCFullYear(),
-                    monthDate.getUTCMonth(),
-                    1
+                    monthDate.getUTCMonth() + 1,
+                    0
+                  )
+                ),
+            !monthDate
+              ? undefined
+              : or(
+                  isNull(categoryTable.endDate),
+                  gte(
+                    categoryTable.endDate,
+                    new Date(
+                      monthDate.getUTCFullYear(),
+                      monthDate.getUTCMonth(),
+                      1
+                    )
                   )
                 )
-              )
+          )
         )
-      )
-      .orderBy(asc(categoryTable.name))
-      .groupBy((t) => [
-        t.id,
-        t.amount,
-        t.budgetId,
-        t.startDate,
-        t.endDate,
-        t.name,
-        t.budget.id,
-        t.budget.name,
-        t.budget.isDefault,
-      ]);
+        .orderBy(asc(categoryTable.name))
+        .groupBy((t) => [
+          t.id,
+          t.amount,
+          t.budgetId,
+          t.startDate,
+          t.endDate,
+          t.name,
+          t.budget.id,
+          t.budget.name,
+          t.budget.isDefault,
+        ])
+    ).map(
+      (category) =>
+        ({
+          ...category,
+          color:
+            ColorEnum[
+              snakeToPascalCase(category.color) as keyof typeof ColorEnum
+            ],
+          icon: IconEnum[
+            snakeToPascalCase(category.icon) as keyof typeof IconEnum
+          ],
+        } as Category)
+    );
 
     const otherCategoryTransactions = (
       await db
         .select({
-          amount: sql`sum(${transactionTable.amount})`.mapWith(Number),
+          amount: sql`COALESCE(sum(${transactionTable.amount}), 0)`.mapWith(
+            Number
+          ),
         })
         .from(transactionTable)
         .where(
@@ -143,7 +164,7 @@ export class Categories {
         amount: 0,
         totalSpent: otherCategoryTransactions.amount,
         startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      });
+      } as Category);
     }
 
     return results;

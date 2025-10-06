@@ -20,6 +20,7 @@ export type Scalars = {
 
 export type Account = {
   __typename?: 'Account';
+  balance: Scalars['Float']['output'];
   budget: Budget;
   color: ColorEnum;
   currency: Scalars['String']['output'];
@@ -70,7 +71,9 @@ export type BasicAccount = {
 export type BasicCategory = {
   __typename?: 'BasicCategory';
   amount: Scalars['Float']['output'];
+  color: ColorEnum;
   endDate?: Maybe<Scalars['DateTime']['output']>;
+  icon: IconEnum;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   startDate: Scalars['DateTime']['output'];
@@ -111,22 +114,22 @@ export type Category = {
 export enum ColorEnum {
   Amber = 'AMBER',
   Blue = 'BLUE',
-  BlueGray = 'BLUE_GRAY',
   Cyan = 'CYAN',
   Emerald = 'EMERALD',
   Fuschia = 'FUSCHIA',
   Green = 'GREEN',
   Indigo = 'INDIGO',
-  LightBlue = 'LIGHT_BLUE',
   Lime = 'LIME',
   Orange = 'ORANGE',
   Pink = 'PINK',
   Purple = 'PURPLE',
   Red = 'RED',
   Rose = 'ROSE',
+  Sky = 'SKY',
+  Slate = 'SLATE',
+  Stone = 'STONE',
   Teal = 'TEAL',
   Violet = 'VIOLET',
-  WarmGray = 'WARM_GRAY',
   Yellow = 'YELLOW'
 }
 
@@ -683,6 +686,7 @@ export type ResolversParentTypes = {
 };
 
 export type AccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = {
+  balance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   budget?: Resolver<ResolversTypes['Budget'], ParentType, ContextType>;
   color?: Resolver<ResolversTypes['ColorEnum'], ParentType, ContextType>;
   currency?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -713,7 +717,9 @@ export type BasicAccountResolvers<ContextType = any, ParentType extends Resolver
 
 export type BasicCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['BasicCategory'] = ResolversParentTypes['BasicCategory']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  color?: Resolver<ResolversTypes['ColorEnum'], ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  icon?: Resolver<ResolversTypes['IconEnum'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;

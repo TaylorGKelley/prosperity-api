@@ -60,9 +60,9 @@ export class Accounts {
         accountRecord.accessTokenIV
       );
 
-      const accountInfo = await new TellerClient(accessToken).getAccount(
-        accountRecord.tellerId
-      );
+      const tellerClient = new TellerClient(accessToken);
+      const accountInfo = await tellerClient.getAccount(accountRecord.tellerId);
+      const balance = await tellerClient.getBalances(accountInfo.id);
 
       result.push({
         id: accountRecord.id,
@@ -75,6 +75,7 @@ export class Accounts {
               ) as keyof typeof ColorEnum
             ],
         },
+        balance: balance.available ? parseFloat(balance.available) : 0,
         currency: accountInfo.currency,
         enrollmentId: accountInfo.enrollment_id,
         institution: accountInfo.institution,
@@ -124,9 +125,9 @@ export class Accounts {
       result.accessTokenIV
     );
 
-    const accountInfo = await new TellerClient(accessToken).getAccount(
-      result.tellerId
-    );
+    const tellerClient = new TellerClient(accessToken);
+    const accountInfo = await tellerClient.getAccount(result.tellerId);
+    const balance = await tellerClient.getBalances(accountInfo.id);
 
     return {
       id: result.id,
@@ -137,6 +138,7 @@ export class Accounts {
             snakeToPascalCase(result.budget.color) as keyof typeof ColorEnum
           ],
       },
+      balance: balance.available ? parseFloat(balance.available) : 0,
       currency: accountInfo.currency,
       enrollmentId: accountInfo.enrollment_id,
       institution: accountInfo.institution,
@@ -179,7 +181,8 @@ export class Accounts {
         .where(eq(userBudgetTable.userId, this._userId))
     )[0];
 
-    const accounts = await new TellerClient(input.accessToken).getAccounts();
+    const tellerClient = new TellerClient(input.accessToken);
+    const accounts = await tellerClient.getAccounts();
 
     try {
       const results = await db
@@ -198,46 +201,52 @@ export class Accounts {
           color: accountTable.color,
         });
 
-      return results.map((result) => {
-        const accountInfo = accounts.find(
-          (account) => account.id == result.tellerId
-        )!;
+      return await Promise.all(
+        results.map(async (result) => {
+          const accountInfo = accounts.find(
+            (account) => account.id == result.tellerId
+          )!;
+          const balance = await tellerClient.getBalances(accountInfo.id);
 
-        return {
-          id: result.id,
-          budget: {
-            ...budget,
+          return {
+            id: result.id,
+            budget: {
+              ...budget,
+              color:
+                ColorEnum[
+                  snakeToPascalCase(budget.color) as keyof typeof ColorEnum
+                ],
+            },
+            balance: balance.available ? parseFloat(balance.available) : 0,
+            currency: accountInfo.currency,
+            enrollmentId: accountInfo.enrollment_id,
+            institution: accountInfo.institution,
+            lastFour: parseInt(accountInfo.last_four),
+            name: accountInfo.name,
             color:
               ColorEnum[
-                snakeToPascalCase(budget.color) as keyof typeof ColorEnum
+                snakeToPascalCase(result.color) as keyof typeof ColorEnum
               ],
-          },
-          currency: accountInfo.currency,
-          enrollmentId: accountInfo.enrollment_id,
-          institution: accountInfo.institution,
-          lastFour: parseInt(accountInfo.last_four),
-          name: accountInfo.name,
-          color:
-            ColorEnum[
-              snakeToPascalCase(result.color) as keyof typeof ColorEnum
-            ],
-          type: AccountTypeEnum[
-            snakeToPascalCase(accountInfo.type) as keyof typeof AccountTypeEnum
-          ],
-          subtype:
-            AccountSubtypeEnum[
+            type: AccountTypeEnum[
               snakeToPascalCase(
-                accountInfo.subtype
-              ) as keyof typeof AccountSubtypeEnum
+                accountInfo.type
+              ) as keyof typeof AccountTypeEnum
             ],
-          status:
-            AccountStatusEnum[
-              snakeToPascalCase(
-                accountInfo.status
-              ) as keyof typeof AccountStatusEnum
-            ],
-        };
-      });
+            subtype:
+              AccountSubtypeEnum[
+                snakeToPascalCase(
+                  accountInfo.subtype
+                ) as keyof typeof AccountSubtypeEnum
+              ],
+            status:
+              AccountStatusEnum[
+                snakeToPascalCase(
+                  accountInfo.status
+                ) as keyof typeof AccountStatusEnum
+              ],
+          };
+        })
+      );
     } catch {
       throw new Error('Account is already linked');
     }

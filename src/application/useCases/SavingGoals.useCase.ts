@@ -8,10 +8,13 @@ import {
   MutationUpdateSavingGoalArgs,
   MutationDeleteSavingGoalArgs,
   SavingGoal,
+  ColorEnum,
+  IconEnum,
 } from '@/types/schema';
 import { type User } from '@/types/User';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { type UUID } from 'node:crypto';
+import snakeToPascalCase from '../utils/snakeToPascalCase';
 
 export class SavingGoals {
   public static forUser(user: User | null) {
@@ -32,7 +35,7 @@ export class SavingGoals {
   public async getAll({
     budgetId,
   }: QuerySavingGoalsArgs): Promise<SavingGoal[]> {
-    const result = await db
+    const results = await db
       .select(this._savingGoalColumns)
       .from(savingGoalTable)
       .innerJoin(budgetTable, eq(budgetTable.id, savingGoalTable.budgetId))
@@ -46,13 +49,25 @@ export class SavingGoals {
         )
       );
 
-    return result;
+    return results.map(
+      (result) =>
+        ({
+          ...result,
+          color:
+            ColorEnum[
+              snakeToPascalCase(result.color) as keyof typeof ColorEnum
+            ],
+          icon: IconEnum[
+            snakeToPascalCase(result.icon) as keyof typeof IconEnum
+          ],
+        } as SavingGoal)
+    );
   }
 
   public async get({
     id,
   }: QuerySavingGoalArgs): Promise<SavingGoal | undefined> {
-    return (
+    const result = (
       await db
         .select(this._savingGoalColumns)
         .from(savingGoalTable)
@@ -68,6 +83,16 @@ export class SavingGoals {
           )
         )
     )[0];
+
+    return (
+      result &&
+      ({
+        ...result,
+        color:
+          ColorEnum[snakeToPascalCase(result.color) as keyof typeof ColorEnum],
+        icon: IconEnum[snakeToPascalCase(result.icon) as keyof typeof IconEnum],
+      } as SavingGoal)
+    );
   }
 
   public async create({

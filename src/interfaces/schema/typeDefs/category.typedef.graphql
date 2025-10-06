@@ -27,6 +27,8 @@ type Category {
 type BasicCategory {
   id: ID!
   name: String!
+  icon: IconEnum!
+  color: ColorEnum!
   amount: Float!
   startDate: DateTime!
   endDate: DateTime

@@ -12,6 +12,7 @@ type Mutation {
 type Account {
   id: ID!
   budget: Budget!
+  balance: Float!
   currency: String!
   enrollmentId: String!
   institution: Institution!
